@@ -1,0 +1,189 @@
+# Project Specification: AI-Powered Market Intelligence & Real-Time Ingestion System
+
+This document outlines the detailed system design, specifications, and architecture of the News Intelligence, Event Intelligence, Macro Calendar, Banking IR, Options, and Capital Flows Collection Layers of the system. The system is designed to ingest, structure, and organize Indian and global news, macroeconomics, exchange filings, capital flows, and regulatory events to drive forecasting models for Sensex, Nifty 50, and Bank Nifty.
+
+---
+
+## 1. PROJECT VISION & CORE PHILOSOPHY
+
+### 1.1 Project Vision
+The system constructs a production-grade market intelligence engine that continuously collects, parses, and structures global and domestic market-moving events. Rather than relying on simple price history or generic sentiment indices, the engine treats news, policy releases, and flows as discrete "Structured Events" with measurable historical footprints, enabling the system to evaluate how bourses historically reacted to similar past events.
+
+### 1.2 Core Philosophy
+* **Probability over Certainty**: Markets are influenced by complex, non-linear variables. The system does not attempt to predict exact future prices; instead, it generates directional probability distributions (e.g., 74% Up, 26% Down) and expected price bounds.
+* **Context-Driven Forecasting**: Predictors fail when they treat news as simple sentiment numbers. This system correlates events with macroeconomic metrics, options metrics, and historical similarity databases.
+* **No Price-Predicting LLMs**: Large Language Models (LLMs) are not numeric time-series calculators. The system limits LLMs to information extraction, event classification, causal reasoning, and explanation generation. Numeric forecasting is handled by specialized tabular and deep learning architectures (XGBoost, TFT, PatchTST).
+* **Data Integrity Over Simulation**: Simulated or proxy data is strictly prohibited. The ingestion engine gathers and validates actual regulatory, corporate, banking, option, and macro records starting from March 2019 to today.
+
+---
+
+## 2. HIGH-LEVEL ARCHITECTURE
+
+The data collection and processing architecture is structured in a sequential flow:
+1. **Multi-Source Ingestion**: Pulls from regulators, exchanges, news wires, RSS feeds, banking IR portals, and option derivatives datasets.
+2. **PostgreSQL Event Database**: Stores raw documents in dedicated tables.
+3. **Structured Event Extractor**: Normalizes raw documents into structured event schemas.
+4. **Vector Embedding Layer**: Embeds headlines using a financial NLP model (FinBERT) to capture financial semantics.
+5. **Qdrant Vector Database**: Indexes embeddings for similar event retrieval.
+6. **Feature Engineering Engine**: Merges macro, news sentiment, technical indicators, and options metrics.
+7. **Ensemble Models**: Feeds the compiled feature vectors to the forecasting models.
+
+---
+
+## 3. SOURCE PRIORITY CLASSIFICATION SYSTEM
+
+Every data source is classified into a specific priority tier. Priority metadata is tracked in our ingestion registries and database tables to weight information impact:
+
+### Tier 1 (Highest Priority)
+* **Indian Regulatory & Exchanges**: Reserve Bank of India (RBI), Securities and Exchange Board of India (SEBI), National Stock Exchange (NSE), Bombay Stock Exchange (BSE), Ministry of Statistics and Programme Implementation (MOSPI).
+* **Capital Flows & Institutional Activity**: National Securities Depository Limited (NSDL), Central Depository Services Limited (CDSL).
+* **Calendars & Scheduling**: Domestic and Global Economic Calendars, RBI Calendar, Election Calendar.
+* **Market & Options Indicators**: India VIX, Implied Volatility (IV), Open Interest (OI), Put-Call Ratio (PCR), and 5paisa Market Data.
+
+### Tier 2 (Medium Priority)
+* **Financial News Portals**: The Economic Times, Moneycontrol, Business Standard, LiveMint.
+* **Corporate Banking Intelligence**: Banking Investor Relations Sources, Earnings Call Transcripts, RBI Financial Stability Reports.
+
+### Tier 3 (Lower Priority)
+* **Global Macro Institutions**: IMF, World Bank, OECD, OPEC, ECB, BoE, BoJ.
+* **Global News Agencies**: Reuters RSS, AP News.
+
+---
+
+## 4. DATA COLLECTION LAYER (12 CATEGORIES)
+
+To capture every factor influencing the Sensex, Nifty 50, and Bank Nifty, the collection system is divided into 12 specialized categories:
+
+### Category 1: Indian Financial News (Tier 2)
+Collects and monitors comprehensive financial reporting from local sources.
+* **Primary Sources**: The Economic Times, Moneycontrol, Business Standard, LiveMint.
+* **Information Types**: Banking sector updates, macro policy coverage, corporate earnings reports, policy changes, sector-specific performance, and regulatory updates.
+* **Database Fields**: `timestamp`, `headline`, `article`, `source`, `url`, `category`, `related_entities`.
+
+### Category 2: Regulatory and Exchange Data (Tier 1)
+Ingests direct regulatory releases. Because these documents originate from authorities, they are treated with the highest priority in the sentiment and feature scoring layers.
+* **Primary Sources**: RBI, SEBI, NSE, BSE.
+* **Information Types**: Policy circulars, notifications, margin requirement updates, trading halts, short-selling restrictions, and exchange structural changes.
+* **Database Fields**: `timestamp`, `circular_number`, `title`, `description`, `source`, `affected_sector`, `related_entities`.
+
+### Category 3: Corporate Announcements (Tier 1)
+Collects corporate filings directly from the exchanges to capture individual stock events that drive the index.
+* **Primary Sources**: NSE Corporate Filings, BSE Corporate Filings.
+* **Information Types**: Quarterly and annual results, dividend declarations, stock buybacks, mergers and acquisitions, stock splits, bonus share distributions, management changes, and board meeting schedules.
+* **Database Fields**: `company_name`, `event_type`, `event_date`, `filing_date`, `exchange_source`, `description`.
+
+### Category 4: Banking Sector Intelligence (Tier 2)
+Banking stocks comprise the largest weights in the Bank Nifty index. The system monitors the top financial institutions:
+* **Target Institutions**: State Bank of India (SBI), HDFC Bank, ICICI Bank, Axis Bank, Kotak Mahindra Bank, IndusInd Bank, RBI.
+* **Information Types**: Earnings call transcripts, analyst presentations, capital restructuring plans, NPA (Non-Performing Asset) announcements, loan and deposit growth ratios, capital adequacy ratios (CRAR), net interest margins (NIM), and RBI penalty actions.
+* **Database Fields**: `institution`, `timestamp`, `event_type` (EARNINGS_TRANSCRIPT, RBI_FSR, RBI_ANNUAL), `content`, `url`.
+
+### Category 5: Economic Calendar Events (Tier 1)
+Schedules and results of macroeconomic releases. These dates are marked as high-volatility events.
+* **India Scope**: RBI MPC policy meetings, Repo and Reverse Repo rate decisions, CPI (inflation) releases, WPI releases, GDP quarterly releases, Union Budget announcements, PMI indices (Manufacturing and Services), and IIP (Industrial Production) data.
+* **Global Scope**: FOMC Fed policy meetings, US CPI inflation releases, US GDP releases, US Non-Farm Payrolls (NFP) and unemployment reports, and global interest rate changes.
+* **Database Fields**: `event_name`, `event_type`, `country`, `event_date`, `forecast`, `actual`, `previous`, `importance`, `source`, `created_at`.
+
+### Category 6: Global Financial News (Tier 2/3)
+Monitors global macro and financial developments that impact domestic bourses.
+* **Primary Sources**: Reuters, CNBC.
+* **Information Types**: Global indices movements, central bank easing/tightening, international banking liquidity crises, recession warning reports, and international trade policy agreements.
+
+### Category 7: Geopolitical Event Intelligence (Tier 3)
+Monitors global events that trigger supply-chain shocks or market panic.
+* **Events Monitored**: Outbreak of wars, local military conflicts, bilateral trade disputes/tariffs, global economic sanctions, regional political instability, national elections, international disputes, and shipping route blocks.
+* **Database Fields**: `event_type`, `countries_involved`, `event_start_date`, `event_severity` (High, Medium, Low), `related_commodities`, `potential_market_impact`, `description`.
+
+### Category 8: Commodity Intelligence (Tier 3)
+Tracks price actions and geopolitical news affecting key commodity markets.
+* **Target Commodities**: Crude Oil (Brent/WTI), Gold (USD/INR), Natural Gas.
+* **Information Types**: OPEC policy announcements, global production quotas, supply disruptions, and energy sector outlooks.
+
+### Category 9: Currency and Global Macro Data (Tier 3)
+Tracks indicators representing capital flows and foreign exchange dynamics.
+* **Target Indices**: USD/INR spot rates, Dollar Index (DXY), US 10-Year Treasury Yields.
+
+### Category 10: Central Bank Intelligence (Tier 3)
+Tracks policy notes and statements from key central banks.
+* **Monitored Central Banks**: RBI, US Federal Reserve, European Central Bank (ECB), Bank of England (BoE), Bank of Japan (BoJ).
+* **Information Types**: Policy decisions, interest rate changes, monetary statements, FOMC/MPC minutes, and central bank economic projections.
+* **Database Fields**: `timestamp`, `central_bank`, `event_type`, `title`, `description`, `source`, `policy_action`.
+
+### Category 11: Capital & Institutional Flows (Tier 1)
+Tracks daily and monthly net capital movements from institutional participants.
+* **Primary Sources**: NSDL, CDSL, AMFI.
+* **Information Types**: Foreign Institutional Investor (FII) net buys/sells, Domestic Institutional Investor (DII) net buys/sells, and Mutual Fund category inflows.
+* **Database Fields**: `date`/`month`, `fii_net_buy`, `fii_net_sell`, `dii_net_buy`, `dii_net_sell`, `category`, `source`, `net_inflow`, `aum`.
+
+### Category 12: Options Intelligence (Tier 1)
+Tracks options chain derivatives indicators to capture market positioning and risk thresholds.
+* **Target Underlyings**: Nifty 50, Bank Nifty.
+* **Information Types**: Implied Volatility (IV), Open Interest (OI), Change in Open Interest (change_in_oi), Put-Call Ratio (PCR), Max Pain Strike, and India VIX.
+* **Database Fields**: `timestamp`, `symbol`, `implied_volatility`, `open_interest`, `change_in_oi`, `pcr`, `max_pain`, `india_vix`, `spot_close`.
+
+---
+
+## 5. EVENT INTELLIGENCE SYSTEM & MARKET REACTIONS
+
+To ensure that machine learning models can consume the ingested news, raw text is parsed into a standardized relational schema called "Structured Events."
+
+### 5.1 Predefined Impact Scores Eliminated
+In the primary collection stage, no manual impact weights or predefined importance indexes are assigned. Downstream forecasting models (XGBoost, TFT, PatchTST) will learn event importance dynamically from historical market reactions.
+
+### 5.2 Structured Event Schema (`structured_events`)
+* `timestamp`: Precise date and time of release.
+* `event_type`: Mapped category from Section 5.3.
+* `country`: Country of origin (e.g. India, US, Global).
+* `sector`: Mapped industry sector (e.g. Banking, IT, Energy, Auto).
+* `magnitude`: A numeric representation of the event's scale.
+* `entities_involved`: Names of central banks, governments, or corporate entities.
+* `source`: Ingesting source or feed.
+* `description`: Core textual summary of the event.
+
+### 5.3 Mapped Event Categories
+All incoming news articles are mapped into one of 15 predefined event categories:
+* `RATE_HIKE`, `RATE_CUT`, `INFLATION_RELEASE`, `GDP_RELEASE`, `PMI_RELEASE`, `EARNINGS`, `BANKING_EVENT`, `WAR`, `SANCTION`, `TRADE_WAR`, `ELECTION`, `OIL_SHOCK`, `REGULATORY_CHANGE`, `CORPORATE_ACTION`, `ECONOMIC_CRISIS`.
+
+### 5.4 Future Market Reaction Labels
+To facilitate future machine learning modeling of event impacts, the schema contains columns to store forward index returns. These fields will be populated during feature engineering by calculating the change in index price over multiple horizons following the event timestamp:
+* **Bank Nifty Returns**: `banknifty_return_1m`, `banknifty_return_5m`, `banknifty_return_15m`, `banknifty_return_30m`, `banknifty_return_1h`, `banknifty_return_1d`
+* **Nifty 50 Returns**: `nifty_return_1m`, `nifty_return_5m`, `nifty_return_15m`, `nifty_return_30m`, `nifty_return_1h`, `nifty_return_1d`
+* **Sensex Returns**: `sensex_return_1m`, `sensex_return_5m`, `sensex_return_15m`, `sensex_return_30m`, `sensex_return_1h`, `sensex_return_1d`
+
+---
+
+## 6. DATABASE ARCHITECTURE (12 SCHEMAS)
+
+The database layer consists of 12 distinct relational tables in PostgreSQL:
+
+1. **`news_articles`**: Stores raw ingested financial news articles.
+2. **`structured_events`**: Stores normalized events mapped to the 15 categories with reaction returns.
+3. **`economic_calendar`**: Stores scheduled macroeconomic announcements with actual, forecast, and previous values.
+4. **`corporate_announcements`**: Stores exchange filings (earnings, corporate actions) for banking and key entities.
+5. **`regulatory_events`**: Stores circulars, policy notifications, and trading restrictions from SEBI, RBI, and exchanges.
+6. **`commodity_events`**: Stores events and announcements affecting Brent Oil, Gold, and Gas.
+7. **`geopolitical_events`**: Stores regional conflicts, election dates, and trade wars.
+8. **`currency_events`**: Stores currency moves (USD/INR, DXY) and global macro news.
+9. **`central_bank_events`**: Stores monetary policy statements and meetings.
+10. **`options_intelligence`**: Stores daily options metrics (IV, OI, PCR, Max Pain, VIX).
+11. **`institutional_flows`**: Stores daily NSDL/CDSL capital flows (FII and DII activity).
+12. **`amfi_flows`**: Stores mutual fund category flows and industry AUM metrics.
+
+---
+
+## 7. CURRENT INGESTION INVENTORY & COVERAGE
+
+The system has successfully completed the data collection phase, populating all historical datasets since March 2019. Below is the audited quality inventory:
+
+* **Regulatory Circulars (RBI, SEBI, PIB, MoF, MOSPI)**: 3,460 records (2015-04-15 to 2026-06-12) stored in `regulatory_events`.
+* **Economic Calendar (RBI, US Fed, MOSPI, US BLS/BEA, ECB, BoE, BoJ, IMF, World Bank)**: 75 records (2019-03-15 to 2024-09-18) stored in `economic_calendar`.
+* **Corporate Filings (NSE, BSE)**: 187,474 records (2019-03-01 to 2026-06-13) stored in `corporate_announcements`.
+* **Options Intelligence (NIFTY, BANKNIFTY)**: 7,104 records (2019-03-01 to 2026-06-11) stored in `options_intelligence` with complete India VIX closing rates.
+* **Capital Flows (NSDL)**: 1,901 daily records (2019-03-01 to 2026-06-12) stored in `institutional_flows`.
+* **Banking IR (RBI and top 6 Banks)**: 35 records (2019-06-27 to 2024-06-27) stored in `banking_relations`.
+* **Financial News (Economic Times, Moneycontrol, Business Standard, LiveMint, Reuters, CNBC)**: 107,962 records (2015-06-03 to 2026-06-13) stored in `news_articles`.
+* **Central Bank Events (Fed, ECB, BoE, BoJ)**: 15 records (2019-07-31 to 2024-09-18) stored in `central_bank_events`.
+* **Geopolitical Events (Conflicts, Trade Wars, OPEC Cuts, Elections)**: 7 records (2019-05-10 to 2024-06-04) stored in `geopolitical_events`.
+* **Centralized Structured Events**: 696 records (2015-06-03 to 2026-06-13) stored in `structured_events` after event extraction.
+
+All tables have been exported to CSV format under the `data/exports/` folder.

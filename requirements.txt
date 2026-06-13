@@ -1,0 +1,25 @@
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+websockets>=11.0.0
+pyotp>=2.9.0
+py5paisa>=0.1.0
+
+# Database drivers
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+qdrant-client>=1.6.0
+
+# Machine Learning & AI
+xgboost>=1.7.0
+sentence-transformers>=2.2.0
+google-genai>=0.1.1
+
+# Web Frameworks
+streamlit>=1.25.0
+
+# Market & Macro Data
+yfinance>=1.4.1
+
