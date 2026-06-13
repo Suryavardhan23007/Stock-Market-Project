@@ -1,3 +1,4 @@
+# Currently this project is in development stage and is continously being updated in GitHub after every progress
 # Sensex & Bank Nifty AI-Powered Market Intelligence & Algorithmic Trading System
 
 This is a production-grade, AI-powered real-time forecasting and algorithmic trading system designed for the Indian stock market (specifically Sensex & Bank Nifty). It operates as an intelligent trading assistant, supporting paper-trading and eventually automated live order execution via the **5paisa Xstream API**.
