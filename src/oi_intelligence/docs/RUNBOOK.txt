@@ -1,0 +1,44 @@
+# Options Intelligence (OI) Collection Runbook
+
+This document is for future reference to immediately restart and monitor the OI collector subsystem.
+
+## 1. How to start collection
+```bash
+pm2 start ecosystem.config.js
+```
+
+## 2. How to stop collection
+```bash
+pm2 stop oi_collection_daemon
+```
+
+## 3. How to check PM2 status
+```bash
+pm2 status
+```
+(Look for "online" and check if it has restarted excessively).
+
+## 4. How to check logs
+```bash
+pm2 logs oi_collection_daemon --lines 50
+```
+
+## 5. How to verify database growth
+Run the health dashboard to see total rows and database size:
+```bash
+PYTHONPATH=. ./.venv/bin/python scripts/generate_health_report.py
+```
+
+## 6. How to verify backups
+1. Check the backups folder: `ls -la backups/postgresql/`
+2. Run the weekly verification script manually:
+```bash
+PYTHONPATH=. ./.venv/bin/python scripts/verify_backup.py
+cat logs/backup_verification.log
+```
+
+## 7. How to verify collection health
+Run the unified health dashboard to check missing snapshots, success rates, and reconnect counts:
+```bash
+PYTHONPATH=. ./.venv/bin/python scripts/generate_health_report.py
+```

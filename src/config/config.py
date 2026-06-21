@@ -26,6 +26,8 @@ class Config:
     FIVEPAISA_APP_NAME = os.getenv("FIVEPAISA_APP_NAME")
     FIVEPAISA_APP_SOURCE = os.getenv("FIVEPAISA_APP_SOURCE")
     FIVEPAISA_USER_ID = os.getenv("FIVEPAISA_USER_ID")
+    FIVEPAISA_EMAIL = os.getenv("FIVEPAISA_EMAIL")
+    FIVEPAISA_DOB = os.getenv("FIVEPAISA_DOB")
     FIVEPAISA_CLIENT_CODE = os.getenv("FIVEPAISA_CLIENT_CODE")
     FIVEPAISA_PASSWORD = os.getenv("FIVEPAISA_PASSWORD")
     FIVEPAISA_USER_KEY = os.getenv("FIVEPAISA_USER_KEY")
@@ -46,8 +48,10 @@ class Config:
 
         # 5paisa - warn if missing
         fivepaisa_keys = [
-            "FIVEPAISA_APP_NAME", "FIVEPAISA_USER_ID", "FIVEPAISA_PASSWORD",
-            "FIVEPAISA_USER_KEY", "FIVEPAISA_ENCRYPTION_KEY"
+            "FIVEPAISA_APP_NAME", "FIVEPAISA_APP_SOURCE",
+            "FIVEPAISA_USER_ID", "FIVEPAISA_CLIENT_CODE",
+            "FIVEPAISA_PASSWORD", "FIVEPAISA_USER_KEY",
+            "FIVEPAISA_ENCRYPTION_KEY", "FIVEPAISA_EMAIL", "FIVEPAISA_DOB"
         ]
         for key in fivepaisa_keys:
             if not os.getenv(key):

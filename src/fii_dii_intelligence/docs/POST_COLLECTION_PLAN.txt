@@ -1,0 +1,39 @@
+# FII/DII Intelligence Layer - Post Collection Plan
+
+This document establishes the exact analytical protocol to follow once the FII/DII Intelligence Layer has accumulated sufficient live, out-of-sample data.
+
+## Phase 1: The 30-Day Audit
+After precisely 30 trading days of uninterrupted collection, the following Alpha Validation protocols must be executed:
+
+1. **Correlation Analysis:**
+   - Map `fii_net`, `fii_5d_flow`, and `fii_dii_divergence` against Forward Index Returns (`T+1`, `T+3`, `T+5`).
+   - Use Spearman Rank Correlation to determine if massive institutional buying genuinely precedes upward market drifts.
+
+2. **Information Coefficient (IC) Testing:**
+   - Measure the predictive power of the Streaks. Does an `fii_sell_streak = 5` consistently yield a negative expected return for `T+1`? If so, the signal has a positive IC.
+
+3. **Feature Stability Check:**
+   - Ensure the standard deviation and variance of the collected features remain stable over the month without extreme statistical outliers crashing the distributions.
+
+4. **Predictive Power Testing:**
+   - Train a baseline Random Forest model on `Price Only`.
+   - Train a secondary model on `Price + FII/DII Features`.
+   - Measure the reduction in Mean Squared Error (MSE). If MSE drops, the FII/DII layer contains genuine predictive alpha.
+
+## Phase 2: The 60-Day Audit
+After 60 trading days, repeat Phase 1, plus:
+
+1. **Revalidation & Robustness:**
+   - Compare the correlation coefficients of Day 0-30 vs Day 31-60. If the correlations flip entirely, the signals are statistically noisy and unstable. If they hold, the signals are robust.
+
+2. **Feature Ranking (Strong vs Weak Alpha):**
+   - Execute SHAP (SHapley Additive exPlanations) or XGBoost Feature Importance rankings.
+   - **Strong Alpha:** Keep the features that dominate the top 10% of decision trees.
+   - **Weak/No Alpha:** Ruthlessly delete or ignore any features (e.g. `dii_10d_flow`) that models refuse to use.
+
+3. **Version 2 Prioritization:**
+   - Based on the weaknesses discovered in the 60-day dataset, prioritize the features documented in `VERSION_2_ROADMAP.txt` (e.g., if raw flows are too noisy, prioritize building the FII Z-Score).
+
+4. **Fusion Layer Preparation:**
+   - If Alpha is confirmed, the FII/DII Intelligence Layer is permanently certified for fusion. 
+   - Begin connecting `feature_store.get_shifted_features_for_inference()` to the ultimate ML architecture.

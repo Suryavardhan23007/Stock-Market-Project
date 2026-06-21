@@ -1,0 +1,15 @@
+{
+    "Rows Collected Today": 58110,
+    "Rows Collected This Week": 58110,
+    "Expected Snapshots": 6021,
+    "Received Snapshots": 6014,
+    "Missing Snapshots": 7,
+    "Success Rate (%)": 99.88,
+    "Duplicate Count": 0,
+    "Restart Count": 0,
+    "Auth Refresh Count": 4,
+    "DB Reconnect Count": 0,
+    "Last Successful Collection": "2026-06-16 08:50:27.906912+00:00",
+    "Latest NIFTY Timestamp": "2026-06-16 08:50:25.589813+00:00",
+    "Latest BANKNIFTY Timestamp": "2026-06-16 08:50:25.589813+00:00"
+}

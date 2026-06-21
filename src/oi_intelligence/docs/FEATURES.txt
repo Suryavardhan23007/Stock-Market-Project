@@ -1,0 +1,51 @@
+# OI Intelligence Features (Version 1)
+
+This document details all 11 proprietary features and analytic engines implemented in the Options Intelligence Layer. These features mathematically transform raw Open Interest (OI) and Premium data into higher-level institutional behavioral signals. 
+
+They are engineered specifically to be consumed by downstream Machine Learning models (like XGBoost or TFT) to find predictive Alpha.
+
+---
+
+## 1. Velocity Engine (OI Velocity)
+**What it measures:** The first derivative of Open Interest accumulation or decay over a rolling dynamic time window.
+**Market Intuition:** Massive shifts in Open Interest mean institutions are committing capital. However, OI alone doesn't tell the whole story—the *speed* at which OI is being added (Velocity) detects aggressive, urgent positioning. If Call OI Velocity suddenly spikes violently, it suggests dealers are rapidly selling calls to aggressive buyers, indicating a potential breakout or squeeze.
+
+## 2. Acceleration Engine (OI Acceleration)
+**What it measures:** The second derivative of Open Interest (the rate of change of Velocity).
+**Market Intuition:** While Velocity detects movement, Acceleration detects shifts in market participation. If OI is growing (positive velocity) but the *rate* of growth is slowing down (negative acceleration), it signals that the institutional trend is exhausted and a reversal may be imminent.
+
+## 3. Gamma Engine (GEX / Net Gamma Exposure)
+**What it measures:** The estimated hedging obligations of Options Market Makers (Dealers). It calculates Call GEX, Put GEX, and Net GEX.
+**Market Intuition:** Market makers are legally required to remain delta-neutral. If they sell you a call option, they are short Delta and short Gamma. As the market rises, their Delta becomes more negative, forcing them to physically buy the underlying asset (NIFTY futures) to hedge their exposure. 
+- **Positive Net GEX:** Dealers buy when the market dips and sell when it rallies. This acts as a shock absorber, suppressing volatility and "pinning" the market in a tight range.
+- **Negative Net GEX:** Dealers are forced to sell when the market drops, and buy when it rises. This acts as an accelerator, causing violent momentum cascades, flash crashes, and massive breakouts.
+
+## 4. Concentration Engine (Call Walls and Put Walls)
+**What it measures:** Identifies the specific strike prices that hold the absolute maximum Call Open Interest (Call Wall) and Put Open Interest (Put Wall). It also calculates the "Distance to Wall" from the current Spot Price.
+**Market Intuition:** Walls act as massive psychological and institutional barriers. A massive Put Wall below the spot price acts as heavy structural Support, because put sellers will aggressively defend that level. A massive Call Wall above the spot price acts as heavy Resistance. A breakout *through* a wall often triggers forced liquidations and massive directional moves.
+
+## 5. Writing Detection Engine
+**What it measures:** Classifies the directional intent of the option flow by comparing the change in Open Interest against the change in Premium (Price).
+**Classifications:**
+- **Long Build-Up:** Open Interest is Rising + Premium is Rising. (Aggressive buyers entering).
+- **Short Covering:** Open Interest is Falling + Premium is Rising. (Sellers are trapped and buying to close their positions, causing panic rallies).
+- **Short Build-Up:** Open Interest is Rising + Premium is Falling. (Aggressive writers/sellers are suppressing the price).
+- **Long Unwinding:** Open Interest is Falling + Premium is Falling. (Buyers are taking profit and exiting).
+
+## 6. ATM Flow Engine
+**What it measures:** Localized volume and OI intensity strictly concentrated around the At-The-Money (ATM) strikes.
+**Market Intuition:** Deep Out-Of-The-Money options are often hedges or retail speculation. At-The-Money options are where the true, immediate directional battle is fought by institutions. Surges in ATM flow indicate an imminent directional breakout.
+
+## 7. Statistics Engine (PCR & IV)
+**What it measures:** Put-Call Ratio (Put OI / Call OI) and Implied Volatility (IV). It also tracks their historical percentiles.
+**Market Intuition:** 
+- **PCR:** Evaluates the aggregate market sentiment. Extremely high PCR means the market is heavily skewed toward puts (fear/hedging). Extremely low PCR means the market is skewed toward calls (greed/speculation). Percentiles normalize this to detect extremes relative to history.
+- **Implied Volatility (IV):** Measures the expected future volatility priced into options premiums. 
+
+## 8. Breadth Engine
+**What it measures:** The participation of the underlying constituent stocks of the index (e.g., the 50 stocks inside NIFTY 50).
+**Market Intuition:** An index might be rallying, but if it is only driven by 2 heavily weighted stocks (e.g., Reliance and HDFC) while the other 48 are declining, the rally is weak and likely to fail. Market Breadth measures Advancing vs Declining counts and volume-weighted breadth to confirm if the underlying market truly supports the index's price action.
+
+## 9. Regime Engine
+**What it measures:** Classifies the current "Market Environment" by synthesizing IV, PCR, Breadth, and GEX.
+**Market Intuition:** Machine learning models fail when they apply the same logic to completely different market environments. The Regime Engine classifies the market into distinct phases (e.g., "Positive Gamma / Low Volatility", "Negative Gamma / High Volatility Cascade", "Trending Bull"). By knowing the regime, downstream models can adjust their weights appropriately.

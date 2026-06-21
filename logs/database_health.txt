@@ -1,0 +1,10 @@
+Total Database Size (MB): 701.73
+options_raw_chain Size (MB): 17.69
+Partition Count: 2
+Total Row Count: 58110
+Rows Inserted Today: 58110
+Rows Inserted This Week: 58110
+Rows Inserted This Month: 58110
+Growth Rate (Rows/Day): 8301.43
+Largest Table: market_candles
+Total Index Size (MB): 443.24

@@ -1,0 +1,52 @@
+# FII/DII Intelligence Layer - Version 2 Roadmap
+
+This document outlines the advanced Feature Engineering methodologies scheduled for Version 2.
+**CRITICAL RULE:** Do NOT implement these features until a pristine, continuous 30-60 day historical dataset has been accumulated in Version 1.
+
+---
+
+## 1. FII Flow Z-Score
+**Purpose:** Identify statistically abnormal institutional activity.
+**Formula:** `(Current FII Net Flow - 20_day_rolling_mean) / 20_day_rolling_std`
+**Rationale:** A 5,000 Crore buy in a quiet market is massive. A 5,000 Crore buy during an earnings season might be average. Z-Scores normalize the flow relative to the current volatility regime.
+**Expected Benefit:** Allows ML models to detect "Shock" injections of capital regardless of the underlying index value.
+
+## 2. FII Percentile Framework
+**Purpose:** Measure the extremity of current institutional participation over a very long horizon (e.g. 252 trading days).
+**Formula:** Rank current day's flow against all historical flows, converting to a 0-100 score.
+**Rationale:** Detects when FIIs are historically bearish (e.g., 5th percentile) or historically bullish (e.g., 99th percentile).
+**Expected Benefit:** Reversion strategies. When percentiles hit 99%, the market often exhausts its buyers, signaling an imminent top.
+
+## 3. Flow Velocity
+**Purpose:** Measure the speed (acceleration/deceleration) of institutional participation.
+**Formula:** `Current_Day_FII_Net - Previous_Day_FII_Net` (Δ FII Net Flow)
+**Rationale:** If FIIs bought 1,000Cr yesterday and 5,000Cr today, velocity is highly positive. Capital deployment is accelerating.
+**Expected Benefit:** Detects urgency. Urgent capital deployment precedes sharp momentum trends.
+
+## 4. Flow Acceleration
+**Purpose:** The second derivative of institutional participation.
+**Formula:** `Current_Velocity - Previous_Velocity`
+**Rationale:** Measures whether the rate of buying/selling is plateauing. 
+**Expected Benefit:** Early detection of trend exhaustion before the actual net flow turns negative.
+
+## 5. Institutional Regime Engine
+**Purpose:** Classify the broader macro stance of the cash market.
+**Logic Framework:**
+- *Aggressive Accumulation:* FII > 0 AND DII > 0 (Both buying).
+- *Aggressive Distribution:* FII < 0 AND DII < 0 (Both dumping).
+- *Divergence (Foreign Led):* FII > 0 AND DII < 0.
+- *Divergence (Domestic Led):* DII > 0 AND FII < 0.
+**Expected Use:** Downstream ML models will branch their logic trees (e.g., Random Forests) based on the current regime (e.g., "If Aggressive Distribution, disregard bullish OI signals").
+
+## 6. Multi-Horizon Rolling Flow Models
+**Purpose:** Expand the current 3/5/10/20 day flows into deeper macro aggregations.
+**Horizons:** 60-day, 120-day, 252-day.
+**Expected Use:** Long-term index trajectory forecasting. FII cash flows over a 120-day window heavily dictate the baseline trend of the NIFTY 50.
+
+## 7. OI + FII/DII Fusion Concepts (Fusion Layer)
+**Purpose:** Combine Intraday Derivative positioning (OI Layer) with EOD Cash deployments (FII/DII Layer).
+**Examples:**
+- *Bullish Conviction:* Put Walls building in OI + FII Cash Accumulation = High probability of structural rally.
+- *Bearish Conviction:* Call Walls building in OI + FII Cash Distribution = High probability of structural crash.
+- *Trap Divergence:* Heavy Retail Put Buying in OI + FII Cash Accumulation = Market Makers squeeze retail shorts resulting in an explosive short-covering rally.
+**Expected Use:** This will form the core logic of the ultimate `fusion_layer`.

@@ -1,0 +1,38 @@
+# FII/DII Intelligence Layer - Chronology Rules & Verification
+
+## 1. The Core Chronology Problem (Look-Ahead Bias)
+Institutional flow data (FII/DII Gross Buy, Gross Sell, Net) is released by the exchange **after the market closes**.
+If a machine learning model is trying to predict the price action of "Tuesday" before the market opens on Tuesday, it physically cannot know the FII/DII data for "Tuesday". It can only know the FII/DII data for "Monday".
+
+If a database join links Tuesday's FII data to Tuesday's Target Prediction, the model will cheat ("Look-Ahead Bias") and achieve artificial 99% accuracy in backtesting, but will fail completely in live trading.
+
+## 2. The Verification Logic (Mathematically Safe)
+To make this mathematically impossible to violate, the following layers of defense exist:
+
+### A. Collection Timing
+The `run_collection.py` chron job executes at **19:30 IST**. This inherently ensures that Day `T` data is stamped strictly post-market.
+
+### B. Analytical Calculation Limit
+In `flow_analytics.py`, the engine calculates rolling flows (e.g. 5-day flow) by strictly filtering `< current_trade_date`. The streak calculations also only use the `prev_record` momentum.
+
+### C. The Feature Store Inference Shift (The Absolute Guarantee)
+Inside `src/fii_dii_intelligence/feature_store.py`, the API method `get_shifted_features_for_inference()` is implemented.
+When downstream ML models call this function, it executes a hard `pandas.DataFrame.shift(1)` on the entire intelligence matrix. 
+- **Effect:** The row indexed as `Tuesday` will mathematically contain `Monday`'s features. 
+- **Safety:** When the Fusion Layer later joins `df_price` and `df_fiidii` on `trade_date=Tuesday`, the FII values attached will correctly be from Monday.
+
+## 3. Permitted vs Forbidden Joins
+
+### FORBIDDEN (Do not do this)
+```python
+# Unshifted Raw Join (FATAL FLAW)
+df_fusion = pd.merge(price_df, fiidii_store.get_flow_features(), on='trade_date')
+```
+*Why? Tuesday's index return is now perfectly correlated with Tuesday's post-market FII net flow. Model is corrupted.*
+
+### ALLOWED (Do this)
+```python
+# Shifted Inference Join (SAFE)
+df_fusion = pd.merge(price_df, fiidii_store.get_shifted_features_for_inference(), on='trade_date')
+```
+*Why? Tuesday's index return is now learning from Monday's closing flow data. The model operates exactly as it would in live trading.*

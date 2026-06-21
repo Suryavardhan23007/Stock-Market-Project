@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Text, Index, UniqueConstraint
+from sqlalchemy.sql import func
 from src.database.connection import Base
 
 class MarketCandle(Base):
@@ -294,4 +295,347 @@ class OptionsIntelligence(Base):
     spot_close = Column(Float, nullable=True)
 
 
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import BigInteger, PrimaryKeyConstraint
 
+class SymbolConfig(Base):
+    __tablename__ = "symbol_config"
+    id = Column(Integer, primary_key=True, index=True)
+    symbol = Column(String, nullable=False, unique=True, index=True)
+    atm_zone_width = Column(Float, nullable=False)
+    liquidity_threshold = Column(Float, nullable=False)
+    wall_significance_threshold = Column(Float, nullable=False)
+    coverage_threshold = Column(Float, nullable=False)
+
+class OptionsRawChain(Base):
+    __tablename__ = "options_raw_chain"
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'timestamp'),
+        {'postgresql_partition_by': 'RANGE (timestamp)'}
+    )
+    id = Column(Integer, autoincrement=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    expiry_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    strike_price = Column(Float, nullable=False, index=True)
+    call_oi = Column(BigInteger, nullable=True)
+    put_oi = Column(BigInteger, nullable=True)
+    call_vol = Column(BigInteger, nullable=True)
+    put_vol = Column(BigInteger, nullable=True)
+    
+    # Restored Raw Broker Fields
+    ce_premium = Column(Float, nullable=True)
+    pe_premium = Column(Float, nullable=True)
+    ce_previous_close = Column(Float, nullable=True)
+    pe_previous_close = Column(Float, nullable=True)
+    ce_change_in_oi = Column(BigInteger, nullable=True)
+    pe_change_in_oi = Column(BigInteger, nullable=True)
+    ce_scrip_code = Column(BigInteger, nullable=True)
+    pe_scrip_code = Column(BigInteger, nullable=True)
+
+    bid = Column(Float, nullable=True)
+    ask = Column(Float, nullable=True)
+    spread = Column(Float, nullable=True)
+    premium = Column(Float, nullable=True)
+    
+    # Greeks (NULL placeholders for Phase B)
+    delta = Column(Float, nullable=True)
+    gamma = Column(Float, nullable=True)
+    theta = Column(Float, nullable=True)
+    vega = Column(Float, nullable=True)
+
+class SystemHealthLive(Base):
+    __tablename__ = "system_health_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    api_status = Column(String, nullable=False)
+    db_status = Column(String, nullable=False)
+    partition_status = Column(String, nullable=False)
+    websocket_status = Column(String, nullable=False)
+    last_snapshot_time = Column(DateTime(timezone=True), nullable=True)
+
+class SnapshotIntegrityLive(Base):
+    __tablename__ = "snapshot_integrity_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    strikes_expected = Column(Integer, nullable=True)
+    strikes_received = Column(Integer, nullable=True)
+    chain_coverage_pct = Column(Float, nullable=True)
+    total_call_oi = Column(BigInteger, nullable=True)
+    total_put_oi = Column(BigInteger, nullable=True)
+    total_call_volume = Column(BigInteger, nullable=True)
+    total_put_volume = Column(BigInteger, nullable=True)
+    
+    session_state = Column(String, nullable=False) # PRE_MARKET, MARKET_OPEN, MARKET_CLOSED, POST_MARKET, HOLIDAY
+    data_health_status = Column(String, nullable=False)
+    data_age_seconds = Column(Integer, nullable=True)
+    
+    underlying_spot_price = Column(Float, nullable=True)
+    atm_zone_low = Column(Float, nullable=True)
+    atm_zone_high = Column(Float, nullable=True)
+
+class OptionsVelocityLive(Base):
+    __tablename__ = "options_velocity_live"
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'timestamp'),
+        {'postgresql_partition_by': 'RANGE (timestamp)'}
+    )
+    id = Column(Integer, autoincrement=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    oi_velocity = Column(Float, nullable=True)
+    oi_acceleration = Column(Float, nullable=True)
+    oi_velocity_zscore = Column(Float, nullable=True)
+    oi_acceleration_zscore = Column(Float, nullable=True)
+
+class MarketBreadthLive(Base):
+    __tablename__ = "market_breadth_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    advancing_count = Column(Integer, nullable=True)
+    declining_count = Column(Integer, nullable=True)
+    unchanged_count = Column(Integer, nullable=True)
+    equal_weight_breadth = Column(Float, nullable=True)
+    weighted_breadth = Column(Float, nullable=True)
+
+class OptionsConcentrationLive(Base):
+    __tablename__ = "options_concentration_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    call_wall_strike = Column(Float, nullable=True)
+    put_wall_strike = Column(Float, nullable=True)
+    call_wall_pct = Column(Float, nullable=True)
+    put_wall_pct = Column(Float, nullable=True)
+    
+    previous_call_wall = Column(Float, nullable=True)
+    previous_put_wall = Column(Float, nullable=True)
+    call_wall_shift = Column(Float, nullable=True)
+    put_wall_shift = Column(Float, nullable=True)
+    
+    distance_to_call_wall = Column(Float, nullable=True)
+    distance_to_put_wall = Column(Float, nullable=True)
+    call_wall_duration_minutes = Column(Integer, nullable=True)
+    put_wall_duration_minutes = Column(Integer, nullable=True)
+
+class MarketRegimeLive(Base):
+    __tablename__ = "market_regime_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    previous_regime = Column(String, nullable=True)
+    current_regime = Column(String, nullable=True)
+    transition_timestamp = Column(DateTime(timezone=True), nullable=True)
+    duration_minutes = Column(Integer, nullable=True)
+    stability_score = Column(Float, nullable=True)
+
+class OptionsStatisticsLive(Base):
+    __tablename__ = "options_statistics_live"
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'timestamp'),
+        {'postgresql_partition_by': 'RANGE (timestamp)'}
+    )
+    id = Column(Integer, autoincrement=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    underlying_spot_price = Column(Float, nullable=True)
+    atm_zone_low = Column(Float, nullable=True)
+    atm_zone_high = Column(Float, nullable=True)
+    days_to_expiry = Column(Integer, nullable=True)
+    expiry_type = Column(String, nullable=True) # WEEKLY, MONTHLY
+    
+    total_call_oi = Column(BigInteger, nullable=True)
+    total_put_oi = Column(BigInteger, nullable=True)
+    pcr = Column(Float, nullable=True)
+    iv = Column(Float, nullable=True)
+    vix = Column(Float, nullable=True)
+    warmup_status = Column(String, nullable=False) # COLD_START, PARTIAL_HISTORY, READY
+
+class OptionsContextLive(Base):
+    __tablename__ = "options_context_live"
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'timestamp'),
+        {'postgresql_partition_by': 'RANGE (timestamp)'}
+    )
+    id = Column(Integer, autoincrement=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    collection_version = Column(String, nullable=False)
+    calculation_version = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), nullable=False)
+    source_name = Column(String, nullable=False)
+    
+    underlying_spot_price = Column(Float, nullable=True)
+    atm_zone_low = Column(Float, nullable=True)
+    atm_zone_high = Column(Float, nullable=True)
+    market_open_timestamp = Column(DateTime(timezone=True), nullable=True)
+    market_close_timestamp = Column(DateTime(timezone=True), nullable=True)
+    minutes_since_open = Column(Integer, nullable=True)
+    minutes_until_close = Column(Integer, nullable=True)
+    
+    pcr_percentile = Column(Float, nullable=True)
+    pcr_zscore = Column(Float, nullable=True)
+    oi_velocity_percentile = Column(Float, nullable=True)
+    oi_acceleration_percentile = Column(Float, nullable=True)
+    iv_percentile = Column(Float, nullable=True)
+    vix_percentile = Column(Float, nullable=True)
+    breadth_percentile = Column(Float, nullable=True)
+    regime_stability_percentile = Column(Float, nullable=True)
+
+class DataQualityLog(Base):
+    __tablename__ = "data_quality_log"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    event_type = Column(String, nullable=False, index=True) # MISSING_SNAPSHOT, DISCONNECT, API_FAILURE, STALE_FEED, INSUFFICIENT_DATA, LOW_CHAIN_COVERAGE, OI_STALENESS_WARNING
+    description = Column(Text, nullable=True)
+    severity = Column(String, nullable=False, default="INFO")
+
+class OptionsWritingLive(Base):
+    __tablename__ = "options_writing_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    
+    long_buildup_score = Column(Float, nullable=True)
+    short_buildup_score = Column(Float, nullable=True)
+    short_covering_score = Column(Float, nullable=True)
+    long_unwinding_score = Column(Float, nullable=True)
+
+class OptionsAtmFlowLive(Base):
+    __tablename__ = "options_atm_flow_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    
+    atm_oi_velocity = Column(Float, nullable=True)
+    atm_oi_acceleration = Column(Float, nullable=True)
+    atm_volume_velocity = Column(Float, nullable=True)
+    atm_writing_pressure = Column(Float, nullable=True)
+    atm_flow_score = Column(Float, nullable=True)
+
+class OptionsGammaLive(Base):
+    __tablename__ = "options_gamma_live"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
+    symbol = Column(String, nullable=False, index=True)
+    
+    total_call_gex = Column(Float, nullable=True)
+    total_put_gex = Column(Float, nullable=True)
+    net_gex = Column(Float, nullable=True)
+    gamma_regime = Column(String, nullable=True)
+
+class CollectionHealth(Base):
+    """
+    Tracks collection performance and gap detection.
+    """
+    __tablename__ = "collection_health"
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(String, nullable=False, index=True) # YYYY-MM-DD format
+    expected_snapshots = Column(Integer, nullable=False, default=0)
+    received_snapshots = Column(Integer, nullable=False, default=0)
+    missing_snapshots = Column(Integer, nullable=False, default=0)
+    last_successful_collection = Column(DateTime(timezone=True), nullable=True)
+    reconnect_count = Column(Integer, nullable=False, default=0)
+    auth_refresh_count = Column(Integer, nullable=False, default=0)
+    db_reconnect_count = Column(Integer, nullable=False, default=0)
+
+class FIIDIIRawArchive(Base):
+    """
+    Preserves raw institutional flow data exactly as reported by the exchange before any feature engineering.
+    """
+    __tablename__ = "fii_dii_raw_archive"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trade_date = Column(DateTime(timezone=True), nullable=False, unique=True, index=True)
+    
+    fii_buy = Column(Float, nullable=False, default=0.0)
+    fii_sell = Column(Float, nullable=False, default=0.0)
+    fii_net = Column(Float, nullable=False, default=0.0)
+    
+    dii_buy = Column(Float, nullable=False, default=0.0)
+    dii_sell = Column(Float, nullable=False, default=0.0)
+    dii_net = Column(Float, nullable=False, default=0.0)
+    
+    source = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), default=func.now())
+
+class InstitutionalFlowIntelligence(Base):
+    """
+    Structured institutional participation intelligence including all divergence, rolling, participation, and streak features.
+    """
+    __tablename__ = "institutional_flow_intelligence"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trade_date = Column(DateTime(timezone=True), nullable=False, unique=True, index=True)
+    
+    # 1. Raw Flow Features
+    fii_buy = Column(Float, nullable=False, default=0.0)
+    fii_sell = Column(Float, nullable=False, default=0.0)
+    fii_net = Column(Float, nullable=False, default=0.0)
+    dii_buy = Column(Float, nullable=False, default=0.0)
+    dii_sell = Column(Float, nullable=False, default=0.0)
+    dii_net = Column(Float, nullable=False, default=0.0)
+
+    # 2. Divergence Features
+    fii_dii_divergence = Column(Float, nullable=True) # fii_net - dii_net
+
+    # 3. Rolling Flow Features
+    fii_3d_flow = Column(Float, nullable=True)
+    fii_5d_flow = Column(Float, nullable=True)
+    fii_10d_flow = Column(Float, nullable=True)
+    fii_20d_flow = Column(Float, nullable=True)
+    dii_3d_flow = Column(Float, nullable=True)
+    dii_5d_flow = Column(Float, nullable=True)
+    dii_10d_flow = Column(Float, nullable=True)
+    dii_20d_flow = Column(Float, nullable=True)
+
+    # 4. Participation Features
+    total_institutional_flow = Column(Float, nullable=True) # abs(fii_net) + abs(dii_net)
+    fii_flow_share = Column(Float, nullable=True) # abs(fii_net) / total_institutional_flow
+    dii_flow_share = Column(Float, nullable=True) # abs(dii_net) / total_institutional_flow
+
+    # 5. Streak Features
+    fii_buy_streak = Column(Integer, default=0)
+    fii_sell_streak = Column(Integer, default=0)
+    dii_buy_streak = Column(Integer, default=0)
+    dii_sell_streak = Column(Integer, default=0)
+
+    source = Column(String, nullable=False)
+    ingestion_timestamp = Column(DateTime(timezone=True), default=func.now())

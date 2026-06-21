@@ -1,0 +1,75 @@
+# OI Intelligence Architecture (Version 1)
+
+This document describes the technical implementation, data structures, and operational pipelines of the Options Intelligence (OI) Layer.
+
+---
+
+## 1. The Ingestion Layer
+**Core Component:** `src/oi_intelligence/ingestion/options_streamer.py`
+
+### 1.1 Authentication (`FivePaisaAuthManager`)
+To interface with the broker, the system utilizes the 5paisa V2 Live API. Because classical username/password mechanisms are deprecated, the system implements a programmatic Time-Based One-Time Password (TOTP) flow.
+- The daemon reads `FIVEPAISA_TOTP_SECRET` and `FIVEPAISA_CLIENT_CODE` from the `.env` file.
+- It dynamically generates a pyOTP pin, hits the `/TOTPLogin` and `/GetAccessToken` endpoints, and secures a JWT session.
+- **Resilience:** The daemon automatically detects session expiration (JWT timeouts) and re-executes this TOTP flow without human intervention.
+
+### 1.2 Data Streaming (`OptionsStreamer`)
+The primary streamer polls the broker simultaneously for NIFTY and BANKNIFTY at extremely high frequency (target: ~1.5 seconds per snapshot). 
+- **Spot Price & Expiry Alignment:** It first queries the underlying Spot Price and dynamically calculates the nearest weekly expiry.
+- **Strike Filtering:** It fetches the entire chain but filters out deep out-of-the-money options, capturing the core 21 strikes (10 ITM, 1 ATM, 10 OTM) to maintain database efficiency without sacrificing context.
+- **Breadth Injection:** Immediately after querying the option chain, it queries the `MarketFeed` API for the individual constituent stocks (e.g., HDFC Bank, Reliance) to calculate live market breadth.
+
+---
+
+## 2. The Storage Layer (Database)
+**Core Component:** `src/database/models.py` (Specifically `OptionsRawChain` and `CollectionHealth`)
+
+### 2.1 The 1:1 Broker-to-Database Mapping
+To achieve the "Raw Preservation" philosophy, the V2 API payload is mapped directly to PostgreSQL. Nothing is lost.
+*   **`StrikeRate`** mapped to `strike_price`
+*   **`LastRate`** mapped to `ce_premium` and `pe_premium`
+*   **`OpenInterest`** mapped to `call_oi` and `put_oi`
+*   **`Volume`** mapped to `call_vol` and `put_vol`
+*   **`PreviousClose`** mapped to `ce_previous_close` and `pe_previous_close`
+*   **`ChangeInOI`** mapped to `ce_change_in_oi` and `pe_change_in_oi`
+*   **`ScripCode`** mapped to `ce_scrip_code` and `pe_scrip_code`
+
+### 2.2 PostgreSQL Partitioning Strategy
+Because the daemon inserts roughly 40,000 to 50,000 rows per hour (over 300,000 rows per market day), a standard PostgreSQL table would rapidly degrade in index performance and sequential scan speed.
+- **Implementation:** The `options_raw_chain` table is defined as a parent table using `PARTITION BY RANGE (timestamp)`.
+- **Automation:** A cron job (`scripts/setup_partition_cron.sh`) triggers `src/database/partition_manager.py` every weekend. This script automatically generates a new, perfectly sized weekly partition table in advance.
+
+---
+
+## 3. The Analytics Layer (The Engines)
+**Core Components:** `src/oi_intelligence/analytics/*`
+
+Every time a raw snapshot is successfully verified and inserted into the database, the streamer triggers 11 independent analytic engines. 
+
+These engines perform on-the-fly mathematical calculations (such as deriving implied Greeks using Black-Scholes approximations based on current premiums and time-to-expiry). They transform the raw OI/Volume data into higher-level representations of dealer positioning (GEX), speed of movement (Velocity/Acceleration), and market environment (Regime). 
+
+*(Note: See `FEATURES.txt` for a detailed breakdown of what these engines actually calculate).*
+
+---
+
+## 4. The Operational Layer (PM2 Daemon)
+**Core Component:** `scripts/collection_daemon.py` and `ecosystem.config.js`
+
+To survive a 30-60 day unattended data collection run, the system must be highly autonomous.
+- **Market Awareness:** The daemon checks the system clock and only executes API polling between 09:15 IST and 15:30 IST on active trading days. Outside these hours, it enters a deep sleep state.
+- **Exception Isolation:** Every database write, API network call, and analytic calculation is wrapped in strict exception isolation blocks. A failure in the Gamma Engine will not prevent the raw data from being archived.
+- **Process Supervision:** The `collection_daemon.py` script is managed by Node's **PM2 Cluster Manager**. PM2 guarantees that if the Python process encounters a fatal segmentation fault or an irrecoverable Out-Of-Memory error, it will automatically restart the process within 1 second. 
+
+---
+
+## 5. The Monitoring and Backup Infrastructure
+**Core Components:** `src/oi_intelligence/monitoring/` and `scripts/backup_database.py`
+
+### 5.1 Health Dashboards
+The system natively tracks its own reliability. `collection_health.py` tracks the exact number of expected snapshots vs successfully received snapshots to calculate a live "Success Rate". `database_health.py` monitors partition sizes and growth rates. `scripts/generate_health_report.py` fuses these metrics with the PM2 API to provide a unified terminal dashboard.
+
+### 5.2 Automated Cold Backups
+The database runs on an automated backup schedule via `run_backup.sh`.
+- It executes `pg_dump`, gzips the output, and stamps it with the current date.
+- **Retention Policy:** The script automatically prunes backups older than 30 days (excluding Sunday weekly backups, which are kept for 6 months).
+- **Verification:** The `verify_backup.py` script automatically spawns a temporary isolated database, injects the zipped archive, executes validation queries on the row counts, and reports the integrity status to the logs.

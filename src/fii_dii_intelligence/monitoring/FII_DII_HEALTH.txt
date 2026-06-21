@@ -1,0 +1,27 @@
+# FII/DII Intelligence Layer - Health Monitoring
+
+## Monitoring Strategy
+Unlike the high-frequency OI layer, FII/DII operates at `1 Data Point Per Trading Day`.
+Therefore, health monitoring relies on strictly verifying day-to-day chronology and database continuity.
+
+## How to Verify Health
+Connect to the Postgres database and execute the following SQL to generate the Health Report:
+
+```sql
+SELECT 
+    MAX(trade_date) as latest_trade_date,
+    COUNT(id) as rows_collected,
+    (CURRENT_DATE - MIN(trade_date)::DATE) as expected_trading_days
+FROM institutional_flow_intelligence;
+```
+
+## Health Metrics Dictionary
+
+1. **latest_trade_date:** Should match the most recent NSE active trading day. If it is 2 days behind, the chron job failed or NSE delayed publishing.
+2. **rows_collected:** Total successful daily ingestions.
+3. **expected_trading_days:** Total possible trading days since ingestion began (excluding weekends).
+4. **missing_days:** `expected_trading_days - rows_collected`. If this number is greater than 0, there is a gap in the timeline.
+5. **collection_success_rate:** `(rows_collected / expected_trading_days) * 100`.
+
+## Handling Missing Days
+If the `collection_success_rate` drops below 100%, execute the manual ingestion command listed in the `RUNBOOK.txt` for the specific missing date. The upsert logic in `collector.py` safely injects the missing day and triggers `flow_analytics.py` to retroactively repair any broken Streaks or Rolling Flows!

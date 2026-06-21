@@ -1,0 +1,31 @@
+# FII/DII Intelligence Layer - Architecture
+
+## 1. Directory Structure
+`src/fii_dii_intelligence/`
+This subsystem operates independently of the Options Intelligence Layer and the News Intelligence Layer. It acts purely on end-of-day cash market institutional flows.
+
+## 2. Ingestion Pipeline
+**`ingestion/collector.py`**
+- Intercepts end-of-day provisional flow arrays from the exchange.
+- Executes hard arithmetic validation: `(Gross Buy - Gross Sell) == Net`. If this fails by > 1.0 margin of error, the pipeline hard stops to prevent database corruption.
+- Writes immutably to the `fii_dii_raw_archive` database table.
+
+## 3. Analytics Pipeline
+**`analytics/flow_analytics.py`**
+- Intercepts the successful insertion of the Raw Archive.
+- Queries the PostgreSQL database for the trailing 20 chronologically valid records.
+- Computes Streaks, Divergence, and Rolling Flows.
+- Inserts a fully structured row into `institutional_flow_intelligence`.
+- **Upsert Engine:** Safely handles re-runs by wiping and re-inserting the current day's record to avoid Primary Key constraints.
+
+## 4. Feature Store (ML Ready)
+**`feature_store.py`**
+- This file acts as the ultimate API for the Machine Learning infrastructure.
+- It pulls columns directly from `institutional_flow_intelligence` via a Pandas SQL query.
+- It guarantees that data extracted here will not require any manual Pandas merging or joining before entering XGBoost.
+
+## 5. Validation Enforcement
+**`validation/chronology_tests.py`**
+- Defends against Look-Ahead Bias.
+- FII/DII numbers are printed at 19:30 IST. They cannot physically be used to trade the 09:15-15:30 IST session of the *same* day.
+- The validation engine guarantees that when training ML models, the features used for Day `T` belong strictly to Day `T-1`.

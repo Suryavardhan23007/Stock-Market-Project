@@ -1,0 +1,28 @@
+
+=================================
+COLLECTION HEALTH
+=================
+
+Collector Status: ONLINE (Mem: 75.6 MB, CPU: 6.6%, Uptime: 1781598120346)
+Database Status: ONLINE
+
+Rows Today: 58110
+Rows This Week: 58110
+
+Latest NIFTY Timestamp: 2026-06-16 08:50:25.589813+00:00
+Latest BANKNIFTY Timestamp: 2026-06-16 08:50:25.589813+00:00
+
+Expected Snapshots: 6021
+Received Snapshots: 6014
+Missing Snapshots: 7
+
+Auth Refresh Count: 4
+DB Reconnect Count: 0
+Restart Count: 1
+
+Database Size: 701.73 MB
+Raw Chain Size: 17.69 MB
+
+Success Rate: 99.88%
+
+=================================

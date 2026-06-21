@@ -1,0 +1,26 @@
+# OI Intelligence Entry Point Documentation
+
+## "What file do I run to start OI collection?"
+The primary production entry point is:
+`scripts/collection_daemon.py`
+
+However, **do not run it directly with python**. Always run it via PM2 to ensure auto-restarts.
+
+## PM2 Commands
+**Start Collection:** `pm2 start ecosystem.config.js`
+**Stop Collection:** `pm2 stop oi_collection_daemon`
+**Monitor Collection:** `pm2 logs oi_collection_daemon`
+
+## Secondary Maintenance Scripts
+If you need to manually force the PostgreSQL partition creation:
+`scripts/setup_partition_cron.sh` -> sets up the weekly cron job for `src/database/partition_manager.py`
+
+## Database Dependencies
+PostgreSQL running on `localhost:5432` with user `postgres` and password matching the `.env` file.
+
+## Required Environment Variables
+`.env` must contain:
+`FIVEPAISA_CLIENT_CODE`
+`FIVEPAISA_PASSWORD`
+`FIVEPAISA_TOTP_SECRET`
+`DATABASE_URL`
