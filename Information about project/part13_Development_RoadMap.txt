@@ -1,0 +1,805 @@
+# ABOUT_PROJECT.TXT
+
+# PART 13 — PROJECT ROADMAP, VERSIONING STRATEGY, DEVELOPMENT ORDER, FROZEN LAYERS, NON-NEGOTIABLE RULES AND LONG-TERM VISION
+
+---
+
+# 542. PURPOSE OF THIS SECTION
+
+This section defines:
+
+What the project is.
+
+What the project is not.
+
+What order development should follow.
+
+Which rules can never be violated.
+
+How future versions will evolve.
+
+What constitutes success.
+
+---
+
+# 543. PROJECT NAME
+
+Working Name:
+
+AI-Powered Multi-Layer Quantitative Market Intelligence & Trading System
+
+Internal Philosophy:
+
+Build institutional-grade intelligence before building predictions.
+
+---
+
+# 544. PROJECT VISION
+
+The goal is NOT:
+
+To build another indicator-based trading bot.
+
+The goal is NOT:
+
+To predict price using only machine learning.
+
+The goal is NOT:
+
+To copy retail trading systems.
+
+The goal IS:
+
+To build a multi-layer market intelligence platform capable of understanding:
+
+Market Structure
+
+Institutional Flows
+
+Options Positioning
+
+News
+
+Macro Conditions
+
+Regimes
+
+Volatility
+
+Risk
+
+before generating predictions.
+
+---
+
+# 545. CORE PHILOSOPHY
+
+Market prediction is not one problem.
+
+It is many problems combined.
+
+Therefore:
+
+The architecture separates intelligence into independent layers.
+
+Each layer specializes in one aspect of market behavior.
+
+---
+
+# 546. THE FOUR FOUNDATIONS
+
+The project is built on four foundations:
+
+Data Quality
+
+Chronology Safety
+
+Research Validation
+
+Risk Management
+
+If any one of these fails:
+
+The system fails.
+
+---
+
+# 547. VERSIONING PHILOSOPHY
+
+The project follows:
+
+Freeze → Collect → Validate → Upgrade
+
+NOT:
+
+Build Forever → Never Collect
+
+---
+
+# 548. WHY THIS PHILOSOPHY EXISTS
+
+Most projects continuously add features.
+
+This creates:
+
+Technical Debt
+
+Data Inconsistency
+
+Research Chaos
+
+The project avoids this.
+
+---
+
+# 549. LAYER LIFECYCLE
+
+Every layer follows:
+
+Design
+
+Implementation
+
+Validation
+
+Freeze
+
+Collection
+
+Research Audit
+
+Version Upgrade
+
+---
+
+# 550. OI LAYER STATUS
+
+Current Status:
+
+FROZEN
+
+COLLECTING
+
+---
+
+# 551. OI LAYER OBJECTIVE
+
+Capture:
+
+Options Positioning
+
+Market Maker Activity
+
+Gamma Dynamics
+
+Flow Information
+
+Institutional Derivatives Behavior
+
+---
+
+# 552. OI VERSION 1 FEATURES
+
+Examples:
+
+PCR
+
+ATM Flow
+
+Velocity
+
+Acceleration
+
+Writing Detection
+
+GEX
+
+Call Walls
+
+Put Walls
+
+Regime Inputs
+
+Raw Chain Preservation
+
+---
+
+# 553. OI VERSION 2 ROADMAP
+
+Only after sufficient data collection.
+
+Planned Features:
+
+OI Z-Score
+
+OI/OI-Volume Ratio
+
+Expiry Rollover Intelligence
+
+Multi-Expiry Analysis
+
+Explicit Gamma Squeeze Detection
+
+Dealer Inventory Models
+
+Volatility Surface Models
+
+Skew Models
+
+Charm
+
+Vanna
+
+---
+
+# 554. OI VERSION 2 ENTRY REQUIREMENT
+
+Minimum:
+
+30–60 Trading Days
+
+of clean collection.
+
+No exceptions.
+
+---
+
+# 555. FII/DII LAYER STATUS
+
+Current Status:
+
+FROZEN
+
+COLLECTING
+
+---
+
+# 556. FII/DII OBJECTIVE
+
+Track:
+
+Institutional Capital Flows
+
+Foreign Participation
+
+Domestic Participation
+
+Flow Divergence
+
+Accumulation Cycles
+
+Distribution Cycles
+
+---
+
+# 557. FII/DII VERSION 1 FEATURES
+
+Raw Flows
+
+Rolling Flows
+
+Divergence
+
+Participation Ratios
+
+Buy Streaks
+
+Sell Streaks
+
+Chronology Shift Logic
+
+---
+
+# 558. FII/DII VERSION 2 ROADMAP
+
+After collection.
+
+Potential Features:
+
+Flow Z-Scores
+
+Flow Percentiles
+
+Flow Acceleration
+
+Flow Regime Detection
+
+Institutional Absorption Models
+
+Extreme Flow Shock Detection
+
+Institutional Momentum Models
+
+Cross-Layer Flow Fusion
+
+---
+
+# 559. FII/DII CHRONOLOGY RULE
+
+Yesterday's flow predicts today.
+
+Today's flow never predicts today.
+
+This rule is permanent.
+
+---
+
+# 560. NEWS LAYER STATUS
+
+Current Status:
+
+NEXT ACTIVE DEVELOPMENT PHASE
+
+---
+
+# 561. NEWS LAYER OBJECTIVE
+
+Transform:
+
+Unstructured Information
+
+into
+
+Structured Intelligence.
+
+---
+
+# 562. NEWS VERSION 1 COMPONENTS
+
+Entity Recognition
+
+Market Relevance Filter
+
+FinBERT
+
+Impact Calibration
+
+Entity Weighting
+
+News Velocity
+
+Time Decay
+
+Sentiment Divergence
+
+News Archive
+
+---
+
+# 563. NEWS VERSION 2 POSSIBILITIES
+
+Cross-Market Event Detection
+
+Topic Clustering
+
+Event Graphs
+
+Sector-Specific Intelligence
+
+Global Macro Mapping
+
+Multi-Language News Processing
+
+---
+
+# 564. MACRO LAYER STATUS
+
+PLANNED
+
+---
+
+# 565. MACRO OBJECTIVE
+
+Capture:
+
+Economic Conditions
+
+Liquidity Conditions
+
+Interest Rate Regimes
+
+Inflation Regimes
+
+Systemic Risk
+
+---
+
+# 566. MICROSTRUCTURE LAYER STATUS
+
+PLANNED
+
+Awaiting:
+
+Level-2 Data Collection.
+
+---
+
+# 567. MICROSTRUCTURE ACTIVATION REQUIREMENTS
+
+Bid Prices
+
+Ask Prices
+
+Bid Size
+
+Ask Size
+
+Depth Data
+
+Queue Data
+
+---
+
+# 568. FUSION LAYER STATUS
+
+PLANNED
+
+---
+
+# 569. FUSION OBJECTIVE
+
+Combine:
+
+OI
+
+FII/DII
+
+News
+
+Macro
+
+Microstructure
+
+Mathematical Outputs
+
+into one feature matrix.
+
+---
+
+# 570. ML CORE STATUS
+
+PLANNED
+
+---
+
+# 571. ML CORE OBJECTIVE
+
+Predict:
+
+Direction
+
+Magnitude
+
+Probability
+
+using:
+
+XGBoost
+
+LightGBM
+
+LSTM
+
+GRU
+
+and future ensemble methods.
+
+---
+
+# 572. MATHEMATICAL LAYER STATUS
+
+PLANNED
+
+---
+
+# 573. MATHEMATICAL LAYER OBJECTIVE
+
+Provide:
+
+Regime Detection
+
+Volatility Forecasting
+
+Structural Break Detection
+
+Execution Constraints
+
+Risk Intelligence
+
+---
+
+# 574. PRIMARY MATHEMATICAL MODELS
+
+HHMM
+
+GARCH
+
+CUSUM
+
+Fractional Differentiation
+
+Advanced Volatility Estimators
+
+---
+
+# 575. RISK LAYER STATUS
+
+PLANNED
+
+---
+
+# 576. RISK OBJECTIVE
+
+Protect Capital.
+
+Everything else is secondary.
+
+---
+
+# 577. DEVELOPMENT ORDER
+
+The official order is:
+
+1. OI Intelligence
+2. FII/DII Intelligence
+3. News Intelligence
+4. Macro Intelligence
+5. Fusion Layer
+6. Mathematical Layer Integration
+7. ML Core
+8. Meta-Labeling
+9. Risk Layer
+10. Execution Layer
+11. Research Optimization
+
+---
+
+# 578. WHY THIS ORDER EXISTS
+
+Because:
+
+Data Collection takes time.
+
+Starting collection early creates future research advantages.
+
+---
+
+# 579. NON-NEGOTIABLE RULE #1
+
+Raw Data Must Be Preserved.
+
+Never store only engineered features.
+
+---
+
+# 580. NON-NEGOTIABLE RULE #2
+
+Chronology Must Never Be Violated.
+
+No future information.
+
+Ever.
+
+---
+
+# 581. NON-NEGOTIABLE RULE #3
+
+Look-Ahead Bias Is Forbidden.
+
+All inference uses information available at that time only.
+
+---
+
+# 582. NON-NEGOTIABLE RULE #4
+
+Every Layer Must Have:
+
+README
+
+RUNBOOK
+
+FEATURES
+
+ARCHITECTURE
+
+Documentation is mandatory.
+
+---
+
+# 583. NON-NEGOTIABLE RULE #5
+
+Every Layer Must Have Validation.
+
+No exceptions.
+
+---
+
+# 584. NON-NEGOTIABLE RULE #6
+
+Every Layer Must Have Monitoring.
+
+Silent failures are unacceptable.
+
+---
+
+# 585. NON-NEGOTIABLE RULE #7
+
+Every Layer Must Have Backup Strategy.
+
+Data loss is unacceptable.
+
+---
+
+# 586. NON-NEGOTIABLE RULE #8
+
+No Feature Is Trusted Without Research Validation.
+
+Interesting ≠ Predictive.
+
+---
+
+# 587. NON-NEGOTIABLE RULE #9
+
+Every Alpha Claim Must Be Proven.
+
+Through:
+
+Walk-Forward Testing
+
+DSR
+
+IC Analysis
+
+Out-of-Sample Testing
+
+---
+
+# 588. NON-NEGOTIABLE RULE #10
+
+Do Not Upgrade Layers Before Collecting Data.
+
+Collect first.
+
+Validate second.
+
+Upgrade third.
+
+---
+
+# 589. RESEARCH PRIORITY
+
+Research quality is more important than:
+
+Model complexity.
+
+---
+
+# 590. DATA PRIORITY
+
+A simple model with excellent data is superior to:
+
+A complex model with poor data.
+
+---
+
+# 591. ENGINEERING PRIORITY
+
+Reliability > Features
+
+Always.
+
+---
+
+# 592. PERFORMANCE PRIORITY
+
+Consistency is preferred over:
+
+Maximum Returns.
+
+---
+
+# 593. CAPITAL PRESERVATION PRIORITY
+
+The first objective:
+
+Do not blow up.
+
+The second objective:
+
+Make money.
+
+---
+
+# 594. FUTURE INFRASTRUCTURE GOALS
+
+Possible future upgrades:
+
+Dedicated Server
+
+Cloud Infrastructure
+
+Distributed Processing
+
+GPU Inference Nodes
+
+Data Lake Architecture
+
+---
+
+# 595. LONG-TERM RESEARCH GOAL
+
+Create a research platform capable of continuously discovering:
+
+New Alpha Sources
+
+New Features
+
+New Regimes
+
+New Market Behaviors
+
+---
+
+# 596. LONG-TERM TRADING GOAL
+
+Create a professional-grade decision support and trading system capable of adapting to changing market conditions.
+
+---
+
+# 597. SUCCESS CRITERIA
+
+The project succeeds if:
+
+Data Collection Remains Reliable
+
+Chronology Remains Safe
+
+Research Remains Scientific
+
+Risk Remains Controlled
+
+The System Continues Improving
+
+---
+
+# 598. FAILURE CRITERIA
+
+The project fails if:
+
+Data becomes corrupted
+
+Chronology is violated
+
+Research becomes undisciplined
+
+Risk management is ignored
+
+---
+
+# 599. FINAL PROJECT PHILOSOPHY
+
+Markets are complex adaptive systems.
+
+No single model can understand them.
+
+No single indicator can predict them.
+
+No single layer can explain them.
+
+Therefore:
+
+The project combines multiple independent intelligence systems into one unified architecture.
+
+Each layer contributes a different perspective.
+
+The fusion of those perspectives creates the final decision.
+
+---
+
+# 600. FINAL MISSION STATEMENT
+
+Build an institutional-grade, research-driven, chronology-safe, multi-layer market intelligence platform that continuously collects, validates, fuses, and learns from market information in order to make better decisions than any individual indicator, model, or data source could achieve alone.
+
+---
+
+END OF PART 13

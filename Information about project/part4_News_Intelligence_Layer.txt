@@ -1,0 +1,915 @@
+# ABOUT_PROJECT.TXT
+
+# PART 4 — NEWS INTELLIGENCE LAYER, EVENT EXTRACTION, FINBERT INTEGRATION, IMPACT CALIBRATION AND NEWS FEATURE ENGINEERING
+
+---
+
+# 80. NEWS INTELLIGENCE LAYER OVERVIEW
+
+The News Intelligence Layer is the third major intelligence layer of the project.
+
+Purpose:
+
+To transform unstructured market news into structured market intelligence.
+
+The layer does NOT exist to summarize news.
+
+The layer does NOT exist to create a chatbot.
+
+The layer does NOT exist to generate news reports.
+
+The layer exists to answer:
+
+"What information entered the market?"
+
+and
+
+"How important is that information?"
+
+---
+
+# 81. THE BIGGEST MISTAKE IN NEWS ANALYSIS
+
+Most retail systems perform:
+
+Article
+→
+Sentiment
+→
+Prediction
+
+This approach is fundamentally flawed.
+
+Example:
+
+Headline A:
+
+"Tesla cuts Model 3 prices by 5%"
+
+Headline B:
+
+"Federal Reserve increases interest rates by 50bps"
+
+FinBERT may assign similar negative sentiment values.
+
+However:
+
+The Tesla announcement affects a single company.
+
+The Federal Reserve announcement affects:
+
+Global Capital Flows
+
+Currencies
+
+Bond Markets
+
+Equities
+
+Commodities
+
+Risk Appetite
+
+These events are not equivalent.
+
+Therefore:
+
+Sentiment alone is insufficient.
+
+---
+
+# 82. CORE PHILOSOPHY OF THE NEWS LAYER
+
+The purpose is not:
+
+"Is this article positive?"
+
+The purpose is:
+
+"What market event does this article represent?"
+
+The architecture therefore focuses on:
+
+Event Intelligence
+
+instead of
+
+Sentiment Intelligence.
+
+---
+
+# 83. NEWS LAYER RESPONSIBILITIES
+
+The News Intelligence Layer must answer:
+
+What happened?
+
+Who caused it?
+
+Which market is affected?
+
+Which sector is affected?
+
+How important is it?
+
+How unusual is it?
+
+How many sources are reporting it?
+
+Did institutions react?
+
+How long should its influence persist?
+
+---
+
+# 84. NEWS COLLECTION PHILOSOPHY
+
+The layer must collect:
+
+Raw News
+
+before
+
+News Intelligence.
+
+This follows the same philosophy used in:
+
+OI Intelligence
+
+and
+
+FII/DII Intelligence.
+
+Raw information is always preserved.
+
+---
+
+# 85. RAW NEWS ARCHIVE
+
+Purpose:
+
+Preserve original news articles.
+
+The archive must store:
+
+Headline
+
+Article Text
+
+Source
+
+Publication Time
+
+URL
+
+Entities
+
+Collection Timestamp
+
+Raw FinBERT Output
+
+Metadata
+
+This becomes the permanent news memory.
+
+---
+
+# 86. WHY RAW NEWS IS STORED
+
+Future researchers may want to:
+
+Retrain FinBERT
+
+Use FinGPT
+
+Use Better LLMs
+
+Redesign Event Extraction
+
+Create New Features
+
+Without raw archives:
+
+These improvements become impossible.
+
+Therefore:
+
+Raw news is never discarded.
+
+---
+
+# 87. NEWS COLLECTION SOURCES
+
+Priority Sources:
+
+Economic Times
+
+Moneycontrol
+
+LiveMint
+
+Business Standard
+
+Reuters
+
+Official Government Sources
+
+RBI
+
+SEBI
+
+NSE
+
+BSE
+
+Press Information Bureau
+
+Ministry of Finance
+
+Federal Reserve
+
+ECB
+
+BOJ
+
+BOE
+
+Future expansion remains possible.
+
+---
+
+# 88. NEWS COLLECTION MODES
+
+The system operates in two modes.
+
+Mode 1:
+
+Intraday News Collection
+
+Purpose:
+
+Capture real-time market-moving events.
+
+Examples:
+
+RBI announcements
+
+Emergency policy changes
+
+Corporate earnings
+
+Breaking geopolitical news
+
+---
+
+Mode 2:
+
+Overnight News Collection
+
+Purpose:
+
+Capture information released after market close.
+
+These events often influence:
+
+Next Day Open
+
+Gap Up
+
+Gap Down
+
+Morning Volatility
+
+---
+
+# 89. NEWS CHRONOLOGY PRINCIPLE
+
+News must obey strict chronology.
+
+Example:
+
+An article published:
+
+Monday 8 PM
+
+may influence:
+
+Tuesday Market
+
+but never:
+
+Monday Market.
+
+This rule is mandatory.
+
+---
+
+# 90. THREE-STAGE NEWS FILTERING PIPELINE
+
+The News Layer processes information through multiple stages.
+
+Purpose:
+
+Prevent noise from reaching expensive NLP models.
+
+This reduces:
+
+Latency
+
+Cost
+
+False Signals
+
+---
+
+# 91. STAGE 1 — TOKEN MATCHER
+
+Purpose:
+
+Fast keyword filtering.
+
+This stage uses:
+
+Entity Dictionaries
+
+Market Dictionaries
+
+Economic Dictionaries
+
+Ticker Dictionaries
+
+Examples:
+
+RBI
+
+SEBI
+
+Inflation
+
+GDP
+
+Repo Rate
+
+NIFTY
+
+BANKNIFTY
+
+Reliance
+
+HDFC
+
+Federal Reserve
+
+Crude Oil
+
+USDINR
+
+Only articles passing this stage proceed further.
+
+---
+
+# 92. WHY TOKEN MATCHING EXISTS
+
+The internet contains enormous noise.
+
+Examples:
+
+Sports
+
+Entertainment
+
+Politics unrelated to markets
+
+Lifestyle content
+
+These should never consume FinBERT resources.
+
+Token matching removes irrelevant content early.
+
+---
+
+# 93. STAGE 2 — MARKET RELEVANCE FILTER
+
+Purpose:
+
+Verify whether the article is genuinely market relevant.
+
+This stage uses:
+
+Sentence Embeddings
+
+and
+
+Similarity Analysis.
+
+---
+
+# 94. MARKET RELEVANCE CENTROID
+
+A dedicated:
+
+Market Relevance Centroid
+
+is constructed.
+
+Method:
+
+Collect hundreds of historically important market articles.
+
+Convert them into embeddings.
+
+Average them.
+
+Create a representative market vector.
+
+---
+
+# 95. LIVE RELEVANCE CHECK
+
+Every incoming article:
+
+Generates an embedding.
+
+Cosine Similarity is calculated.
+
+If similarity exceeds threshold:
+
+Article proceeds.
+
+Otherwise:
+
+Article is discarded.
+
+---
+
+# 96. WHY THIS MATTERS
+
+Keyword matching alone is insufficient.
+
+Example:
+
+An article mentioning:
+
+"Bank"
+
+does not automatically affect markets.
+
+The relevance filter prevents false positives.
+
+---
+
+# 97. STAGE 3 — FINBERT
+
+Purpose:
+
+Extract financial sentiment.
+
+Outputs:
+
+Positive Probability
+
+Negative Probability
+
+Neutral Probability
+
+Raw Sentiment Score
+
+Formula:
+
+S = Positive Probability − Negative Probability
+
+---
+
+# 98. WHY FINBERT IS NOT THE FINAL ANSWER
+
+FinBERT measures:
+
+Language Sentiment
+
+It does NOT measure:
+
+Economic Impact.
+
+Therefore:
+
+Additional calibration layers are required.
+
+---
+
+# 99. EVENT EXTRACTION
+
+This is the most important part of the News Layer.
+
+Purpose:
+
+Convert articles into structured events.
+
+Examples:
+
+RATE_HIKE
+
+RATE_CUT
+
+GDP_BEAT
+
+GDP_MISS
+
+CPI_HIGH
+
+CPI_LOW
+
+WAR
+
+CEASEFIRE
+
+MERGER
+
+EARNINGS_BEAT
+
+EARNINGS_MISS
+
+BANK_FAILURE
+
+SANCTIONS
+
+---
+
+# 100. WHY EVENTS MATTER
+
+Models learn better from:
+
+Structured Events
+
+than
+
+Raw Text.
+
+Event representation is significantly more stable across time.
+
+---
+
+# 101. ENTITY EXTRACTION
+
+Named Entity Recognition extracts:
+
+Organizations
+
+Countries
+
+Companies
+
+Indices
+
+Regulators
+
+Central Banks
+
+Examples:
+
+RBI
+
+Federal Reserve
+
+Reliance
+
+HDFC Bank
+
+Infosys
+
+SEBI
+
+NSE
+
+---
+
+# 102. ENTITY WEIGHTING
+
+Not all entities are equally important.
+
+Each entity receives:
+
+Systemic Weight
+
+called:
+
+Entity Weight.
+
+---
+
+# 103. EXAMPLE ENTITY WEIGHTS
+
+Tier 1:
+
+RBI
+
+Federal Reserve
+
+SEBI
+
+Ministry of Finance
+
+Weight ≈ 5
+
+---
+
+Tier 2:
+
+Reliance
+
+HDFC Bank
+
+ICICI Bank
+
+Infosys
+
+Weight ≈ 3
+
+---
+
+Tier 3:
+
+Smaller Companies
+
+Weight ≈ 1
+
+---
+
+# 104. CALIBRATED SENTIMENT
+
+Formula Concept:
+
+Calibrated Sentiment
+
+=
+
+Raw FinBERT Sentiment
+
+×
+
+Entity Weight
+
+This prevents:
+
+Small news
+
+and
+
+Systemic news
+
+from receiving equal importance.
+
+---
+
+# 105. NEWS VELOCITY
+
+Purpose:
+
+Measure information spread.
+
+Formula Concept:
+
+Number of unique articles
+
+within a rolling time window.
+
+---
+
+# 106. WHY NEWS VELOCITY MATTERS
+
+A single article:
+
+May be irrelevant.
+
+Fifty simultaneous articles:
+
+May indicate a systemic event.
+
+News velocity measures:
+
+Market attention.
+
+---
+
+# 107. SYSTEMIC SENTIMENT SHOCK
+
+Concept:
+
+Sentiment
+
+×
+
+News Velocity
+
+Purpose:
+
+Amplify major market events.
+
+Suppress isolated noise.
+
+---
+
+# 108. SENTIMENT ELASTICITY
+
+Purpose:
+
+Measure whether markets actually reacted.
+
+FinBERT may detect positive sentiment.
+
+But:
+
+Did institutions respond?
+
+This question is critical.
+
+---
+
+# 109. FUTURE SENTIMENT ELASTICITY MODEL
+
+Future implementation may combine:
+
+FinBERT Output
+
+Order Flow Imbalance
+
+Spread Expansion
+
+Microstructure Response
+
+to determine whether smart money reacted.
+
+---
+
+# 110. NEWS TIME DECAY
+
+News influence is not permanent.
+
+Every event decays over time.
+
+Purpose:
+
+Reduce influence of old information.
+
+Recent information receives higher weight.
+
+Older information gradually fades.
+
+---
+
+# 111. OVERNIGHT NEWS FEATURES
+
+Purpose:
+
+Capture:
+
+T-1 Market Information
+
+Examples:
+
+Post-Close Earnings
+
+Government Announcements
+
+Central Bank Decisions
+
+Geopolitical Events
+
+These influence:
+
+Next Trading Session.
+
+---
+
+# 112. INTRADAY NEWS FEATURES
+
+Purpose:
+
+Capture:
+
+Live Market Events.
+
+Examples:
+
+11:30 RBI Announcement
+
+2:15 Earnings Release
+
+Unexpected Regulatory Decision
+
+These influence:
+
+Current Session.
+
+---
+
+# 113. NEWS FEATURE STORE
+
+Purpose:
+
+Convert intelligence into:
+
+Model-Ready Features.
+
+Examples:
+
+Rolling Sentiment
+
+Entity Scores
+
+Event Counts
+
+Velocity Scores
+
+Shock Scores
+
+Impact Scores
+
+Decay Scores
+
+---
+
+# 114. CROSS-LAYER NEWS FEATURES
+
+News can interact with:
+
+Price
+
+OI
+
+FII/DII
+
+Macro
+
+These become:
+
+Fusion Features.
+
+---
+
+# 115. SENTIMENT-PRICE DIVERGENCE
+
+Purpose:
+
+Measure disagreement.
+
+Example:
+
+Highly Positive News
+
+but
+
+Price Falls.
+
+This often contains useful information.
+
+---
+
+# 116. NEWS LAYER STATUS
+
+Current Status:
+
+PLANNED
+
+Not Yet Frozen.
+
+Not Yet Collecting.
+
+Architecture currently under development.
+
+---
+
+# 117. NEWS LAYER GOAL
+
+The final objective is NOT:
+
+News Prediction.
+
+The final objective is:
+
+News Intelligence.
+
+The layer must convert:
+
+Millions of words
+
+into
+
+A small set of structured market signals
+
+that can later be combined with:
+
+OI Intelligence
+
+FII/DII Intelligence
+
+Macro Intelligence
+
+Mathematical Models
+
+Machine Learning Models
+
+inside the Fusion Layer.
+
+---
+
+END OF PART 4

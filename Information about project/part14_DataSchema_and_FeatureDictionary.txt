@@ -1,0 +1,1197 @@
+# ABOUT_PROJECT.TXT
+
+# PART 14 — CANONICAL DATA SCHEMAS, FEATURE DICTIONARY, FEATURE OWNERSHIP, CHRONOLOGY RULES AND MASTER REFERENCE MANUAL
+
+---
+
+# 601. PURPOSE OF PART 14
+
+This document serves as the:
+
+Single Source of Truth
+
+for all features, tables, columns, ownership rules, chronology rules, and mathematical definitions inside the project.
+
+Whenever there is confusion regarding:
+
+What a feature means
+
+Which layer owns it
+
+Whether it can be used for inference
+
+Whether it can be used for training
+
+How it should be calculated
+
+This document overrides all other documentation.
+
+---
+
+# 602. FEATURE CLASSIFICATION SYSTEM
+
+Every feature in the project belongs to one of four categories.
+
+---
+
+# 603. RAW FEATURES
+
+Definition:
+
+Collected directly from external sources.
+
+Examples:
+
+OHLCV
+
+Raw Option Chain
+
+FII Buy
+
+DII Buy
+
+News Articles
+
+Interest Rates
+
+---
+
+# 604. ENGINEERED FEATURES
+
+Definition:
+
+Created from raw features.
+
+Examples:
+
+PCR
+
+OI Velocity
+
+News Velocity
+
+ATR
+
+Bollinger Width
+
+Rolling Volatility
+
+---
+
+# 605. INTELLIGENCE FEATURES
+
+Definition:
+
+High-level signals produced by intelligence layers.
+
+Examples:
+
+Writing Detection
+
+GEX
+
+Flow Divergence
+
+Impact Scores
+
+Regime States
+
+---
+
+# 606. MODEL FEATURES
+
+Definition:
+
+Final features consumed by:
+
+HHMM
+
+GARCH
+
+XGBoost
+
+LightGBM
+
+LSTM
+
+GRU
+
+Meta-Labeler
+
+---
+
+# 607. FEATURE OWNERSHIP RULE
+
+Every feature must have exactly one owner.
+
+Example:
+
+PCR
+
+Owner:
+
+OI Layer
+
+Not Fusion Layer.
+
+Not ML Layer.
+
+---
+
+# 608. WHY OWNERSHIP EXISTS
+
+Avoids:
+
+Duplicate Calculations
+
+Conflicting Definitions
+
+Research Errors
+
+---
+
+# 609. MASTER DATABASE INVENTORY
+
+Current and Future Core Tables:
+
+options_raw_chain
+
+options_velocity_live
+
+options_writing_live
+
+options_gamma_live
+
+options_atm_flow_live
+
+fii_dii_raw_archive
+
+institutional_flow_intelligence
+
+news_raw_archive
+
+news_intelligence
+
+macro_raw_archive
+
+macro_intelligence
+
+fusion_feature_store
+
+training_feature_store
+
+trade_log
+
+research_experiments
+
+collection_health
+
+database_health
+
+---
+
+# 610. OI RAW ARCHIVE TABLE
+
+Table:
+
+options_raw_chain
+
+Purpose:
+
+Permanent preservation of raw options chain data.
+
+---
+
+# 611. OI RAW ARCHIVE CORE FIELDS
+
+timestamp
+
+symbol
+
+expiry_date
+
+strike_price
+
+call_oi
+
+put_oi
+
+call_vol
+
+put_vol
+
+ce_premium
+
+pe_premium
+
+ce_change_in_oi
+
+pe_change_in_oi
+
+ce_previous_close
+
+pe_previous_close
+
+ce_scrip_code
+
+pe_scrip_code
+
+---
+
+# 612. OI RAW ARCHIVE RULE
+
+This table must always allow:
+
+Full reconstruction
+
+of all OI intelligence features.
+
+---
+
+# 613. OI FEATURE STORE
+
+Owner:
+
+OI Intelligence Layer
+
+Purpose:
+
+Provide ML-ready OI signals.
+
+---
+
+# 614. OI VERSION 1 FEATURES
+
+PCR
+
+Velocity
+
+Acceleration
+
+ATM Flow
+
+Writing Detection
+
+Call Wall
+
+Put Wall
+
+Gamma Exposure
+
+Regime Inputs
+
+---
+
+# 615. PCR DEFINITION
+
+PCR
+
+=
+
+Total Put OI
+
+/
+
+Total Call OI
+
+---
+
+# 616. VELOCITY DEFINITION
+
+Velocity
+
+=
+
+OI(t)
+
+*
+
+OI(t-1)
+
+---
+
+# 617. ACCELERATION DEFINITION
+
+Acceleration
+
+=
+
+Velocity(t)
+
+*
+
+Velocity(t-1)
+
+---
+
+# 618. ATM FLOW DEFINITION
+
+Measures:
+
+Flow concentration near:
+
+At-The-Money strikes.
+
+---
+
+# 619. WRITING DETECTION
+
+Uses:
+
+Premium Change
+
+*
+
+OI Change
+
+Purpose:
+
+Detect institutional option writing.
+
+---
+
+# 620. GAMMA EXPOSURE
+
+Uses:
+
+OI
+
+Strike
+
+Expiry
+
+Spot
+
+Purpose:
+
+Estimate dealer gamma positioning.
+
+---
+
+# 621. OI VERSION 2 FEATURES
+
+Not Active Yet.
+
+Requires:
+
+30–60 Trading Days Collection.
+
+---
+
+# 622. OI VERSION 2 LIST
+
+OI Z-Score
+
+OI Volume Ratio
+
+Expiry Rollover Intelligence
+
+Multi Expiry Analysis
+
+Gamma Squeeze Detection
+
+Dealer Inventory Models
+
+Skew Models
+
+Charm
+
+Vanna
+
+---
+
+# 623. OI CHRONOLOGY RULE
+
+Intraday Features:
+
+Can use same-day data.
+
+Training:
+
+Must respect candle chronology.
+
+---
+
+# 624. FII/DII RAW ARCHIVE
+
+Table:
+
+fii_dii_raw_archive
+
+Purpose:
+
+Store official NSE payload exactly as received.
+
+---
+
+# 625. FII/DII RAW FIELDS
+
+trade_date
+
+category
+
+buy_value
+
+sell_value
+
+net_value
+
+source
+
+ingestion_timestamp
+
+---
+
+# 626. FII/DII INTELLIGENCE TABLE
+
+Table:
+
+institutional_flow_intelligence
+
+Purpose:
+
+ML-ready institutional features.
+
+---
+
+# 627. FII/DII VERSION 1 FEATURES
+
+fii_net
+
+dii_net
+
+fii_3d_flow
+
+fii_5d_flow
+
+fii_10d_flow
+
+fii_20d_flow
+
+dii_3d_flow
+
+dii_5d_flow
+
+dii_10d_flow
+
+dii_20d_flow
+
+flow_divergence
+
+buy_streaks
+
+sell_streaks
+
+participation_ratios
+
+---
+
+# 628. FLOW DIVERGENCE
+
+Definition:
+
+fii_net
+
+*
+
+dii_net
+
+---
+
+# 629. FLOW STREAK
+
+Measures:
+
+Consecutive accumulation
+
+or
+
+distribution days.
+
+---
+
+# 630. FII/DII VERSION 2 FEATURES
+
+Flow Z-Score
+
+Flow Percentile
+
+Flow Acceleration
+
+Institutional Regime Detection
+
+Flow Shock Detection
+
+Absorption Models
+
+---
+
+# 631. FII/DII CHRONOLOGY RULE
+
+Critical Rule:
+
+T-1 Data
+
+Predicts
+
+T Data
+
+Always.
+
+---
+
+# 632. SHIFTED FEATURE STORE
+
+Method:
+
+get_shifted_features_for_inference()
+
+Purpose:
+
+Prevent Look-Ahead Bias.
+
+---
+
+# 633. NEWS RAW ARCHIVE
+
+Table:
+
+news_raw_archive
+
+Purpose:
+
+Preserve every collected article.
+
+---
+
+# 634. NEWS RAW FIELDS
+
+article_id
+
+headline
+
+body
+
+source
+
+url
+
+published_time
+
+entity
+
+category
+
+language
+
+collection_timestamp
+
+---
+
+# 635. NEWS INTELLIGENCE TABLE
+
+Table:
+
+news_intelligence
+
+Purpose:
+
+Store processed news features.
+
+---
+
+# 636. NEWS VERSION 1 FEATURES
+
+Raw Sentiment
+
+Entity Weight
+
+Impact Score
+
+News Velocity
+
+Time Decay Score
+
+Relevance Score
+
+Shock Score
+
+Divergence Score
+
+---
+
+# 637. FINBERT SENTIMENT
+
+Definition:
+
+Positive Probability
+
+*
+
+Negative Probability
+
+---
+
+# 638. ENTITY WEIGHT
+
+Examples:
+
+RBI
+
+Weight 5
+
+Reliance
+
+Weight 3
+
+Small Cap
+
+Weight 1
+
+---
+
+# 639. IMPACT SCORE
+
+Impact
+
+=
+
+Sentiment
+
+×
+
+Entity Weight
+
+---
+
+# 640. NEWS VELOCITY
+
+Measures:
+
+Article Frequency
+
+inside rolling windows.
+
+---
+
+# 641. TIME DECAY
+
+Purpose:
+
+Older news becomes less important.
+
+---
+
+# 642. NEWS CHRONOLOGY RULE
+
+Only information available before prediction time may be used.
+
+---
+
+# 643. MACRO RAW ARCHIVE
+
+Table:
+
+macro_raw_archive
+
+Purpose:
+
+Store raw macroeconomic data.
+
+---
+
+# 644. MACRO FEATURES
+
+Interest Rates
+
+Inflation
+
+GDP
+
+Currency
+
+Bond Yields
+
+Commodity Prices
+
+VIX
+
+Global Risk Indicators
+
+---
+
+# 645. MACRO INTELLIGENCE FEATURES
+
+Macro Regime
+
+Liquidity Regime
+
+Inflation Regime
+
+Rate Regime
+
+Systemic Risk Score
+
+---
+
+# 646. MACRO CHRONOLOGY RULE
+
+Release timestamps must be respected.
+
+No future releases allowed.
+
+---
+
+# 647. MATHEMATICAL FEATURE STORE
+
+Owner:
+
+Mathematical Layer
+
+---
+
+# 648. MATHEMATICAL FEATURES
+
+Log Returns
+
+ATR
+
+Bollinger Width
+
+Rolling Volatility
+
+Parkinson Volatility
+
+Fractional Differentiation
+
+GARCH Volatility
+
+HHMM State
+
+CUSUM State
+
+---
+
+# 649. LOG RETURNS
+
+Definition:
+
+ln(Pt/Pt-1)
+
+---
+
+# 650. ATR
+
+Average True Range
+
+Measures volatility.
+
+---
+
+# 651. BOLLINGER WIDTH
+
+Measures:
+
+Volatility Expansion
+
+and
+
+Volatility Compression.
+
+---
+
+# 652. PARKINSON ESTIMATOR
+
+Uses:
+
+High
+
+Low
+
+instead of close-to-close returns.
+
+---
+
+# 653. GARCH OUTPUTS
+
+Forecast Volatility
+
+Confidence Bands
+
+Risk Regime
+
+---
+
+# 654. HHMM OUTPUTS
+
+Meta Regime
+
+Sub Regime
+
+Transition Probabilities
+
+---
+
+# 655. CUSUM OUTPUTS
+
+Structural Break
+
+Detected
+
+or
+
+Not Detected
+
+---
+
+# 656. MICROSTRUCTURE FEATURE STORE
+
+Future Layer.
+
+---
+
+# 657. MICROSTRUCTURE FEATURES
+
+OFI
+
+Microprice
+
+Queue Imbalance
+
+Spread Elasticity
+
+Depth Imbalance
+
+Liquidity Score
+
+Market Impact Score
+
+---
+
+# 658. OFI
+
+Order Flow Imbalance.
+
+Measures:
+
+Buyer Pressure
+
+vs
+
+Seller Pressure.
+
+---
+
+# 659. MICROPRICE
+
+Liquidity-weighted price estimate.
+
+---
+
+# 660. FUSION FEATURE STORE
+
+Owner:
+
+Fusion Layer
+
+Purpose:
+
+Create unified feature matrix.
+
+---
+
+# 661. FUSION INPUTS
+
+OI
+
+FII/DII
+
+News
+
+Macro
+
+Mathematical
+
+Microstructure
+
+---
+
+# 662. FUSION OUTPUTS
+
+Master Feature Matrix.
+
+---
+
+# 663. ML TRAINING FEATURE STORE
+
+Purpose:
+
+Provide final model inputs.
+
+---
+
+# 664. ML INPUT CATEGORIES
+
+Market Features
+
+OI Features
+
+Flow Features
+
+News Features
+
+Macro Features
+
+Regime Features
+
+Risk Features
+
+---
+
+# 665. PRIMARY MODEL OUTPUTS
+
+Probability Up
+
+Probability Down
+
+Expected Return
+
+Expected Volatility
+
+---
+
+# 666. META-LABELER INPUTS
+
+Primary Model Output
+
+GARCH
+
+HHMM
+
+VIX
+
+Spread Features
+
+Confidence Metrics
+
+---
+
+# 667. META-LABELER OUTPUT
+
+Probability of Success
+
+Range:
+
+0
+
+to
+
+1
+
+---
+
+# 668. RISK FEATURE STORE
+
+Owner:
+
+Risk Layer
+
+---
+
+# 669. RISK FEATURES
+
+Kelly Fraction
+
+Expected Risk
+
+Expected Reward
+
+Barrier Distance
+
+Portfolio Exposure
+
+Current Drawdown
+
+---
+
+# 670. EXECUTION FEATURES
+
+Trade Direction
+
+Position Size
+
+Order Type
+
+Stop Loss
+
+Take Profit
+
+---
+
+# 671. RESEARCH DATABASE
+
+Table:
+
+research_experiments
+
+Purpose:
+
+Store research results.
+
+---
+
+# 672. RESEARCH FIELDS
+
+Experiment ID
+
+Model Version
+
+Parameters
+
+Metrics
+
+Date
+
+Notes
+
+---
+
+# 673. TRADE DATABASE
+
+Table:
+
+trade_log
+
+Purpose:
+
+Permanent trade archive.
+
+---
+
+# 674. TRADE LOG FIELDS
+
+Entry Time
+
+Exit Time
+
+Direction
+
+Size
+
+PnL
+
+Regime
+
+Signal Source
+
+Confidence
+
+---
+
+# 675. HEALTH TABLES
+
+collection_health
+
+database_health
+
+---
+
+# 676. HEALTH METRICS
+
+Rows Collected
+
+Expected Rows
+
+Missing Rows
+
+Restart Count
+
+Auth Refresh Count
+
+Success Rate
+
+Database Size
+
+Latest Timestamp
+
+---
+
+# 677. GLOBAL CHRONOLOGY LAW
+
+No feature may use information from the future.
+
+This rule supersedes every other rule.
+
+---
+
+# 678. GLOBAL DATA LAW
+
+Raw data must always be preserved.
+
+---
+
+# 679. GLOBAL VALIDATION LAW
+
+No feature enters production without validation.
+
+---
+
+# 680. GLOBAL RESEARCH LAW
+
+Correlation alone is insufficient.
+
+Predictive value must be demonstrated.
+
+---
+
+# 681. GLOBAL RISK LAW
+
+Capital preservation takes priority over return generation.
+
+---
+
+# 682. GLOBAL ENGINEERING LAW
+
+Reliability is more important than optimization.
+
+---
+
+# 683. FINAL PURPOSE OF PART 14
+
+Part 14 exists to ensure:
+
+Every feature
+
+Every table
+
+Every column
+
+Every intelligence layer
+
+Every model
+
+Every researcher
+
+and every future AI agent
+
+shares the exact same understanding of the project.
+
+This document is the canonical technical reference for the entire system.
+
+---
+
+# 684. FINAL STATUS
+
+PART 14 COMPLETE
+
+CANONICAL REFERENCE COMPLETE
+
+ABOUT_PROJECT.TXT COMPLETE
+
+---
+
+END OF PART 14
+
+END OF ABOUT_PROJECT.TXT
+
+END OF PROJECT DOCUMENTATION

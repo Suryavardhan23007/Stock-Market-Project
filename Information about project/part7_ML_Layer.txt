@@ -1,0 +1,983 @@
+# ABOUT_PROJECT.TXT
+
+# PART 7 — MACHINE LEARNING CORE, ENSEMBLE ARCHITECTURE, META-LABELING, FEATURE SELECTION AND ALPHA GENERATION
+
+---
+
+# 202. MACHINE LEARNING LAYER OVERVIEW
+
+The Machine Learning Layer is the central prediction engine of the project.
+
+All previous layers exist primarily to provide structured information to this layer.
+
+The ML Layer does not collect data.
+
+The ML Layer does not execute trades.
+
+The ML Layer does not manage risk.
+
+Its purpose is simple:
+
+Transform intelligence into probabilistic forecasts.
+
+---
+
+# 203. CORE PHILOSOPHY
+
+The project deliberately avoids relying on a single model.
+
+Reason:
+
+Markets are non-stationary.
+
+A model that performs well during:
+
+Bull Markets
+
+may completely fail during:
+
+Bear Markets
+
+Sideways Markets
+
+High Volatility Markets
+
+Therefore:
+
+Model diversification is mandatory.
+
+---
+
+# 204. WHY ENSEMBLES ARE USED
+
+Single models suffer from:
+
+Overfitting
+
+Regime Bias
+
+Instability
+
+Model Drift
+
+Ensembles reduce these weaknesses.
+
+The objective is not:
+
+Maximum Accuracy
+
+The objective is:
+
+Stable Alpha Generation.
+
+---
+
+# 205. PRIMARY ML OBJECTIVE
+
+Predict future market behavior using information from:
+
+Price
+
+Volume
+
+OI
+
+FII/DII
+
+News
+
+Macro
+
+Mathematical Layer
+
+Microstructure Layer
+
+The output becomes:
+
+Probabilistic market forecasts.
+
+---
+
+# 206. PREDICTION TARGETS
+
+The system may support:
+
+Direction Prediction
+
+Return Prediction
+
+Volatility Prediction
+
+Trade Success Probability
+
+Regime Prediction
+
+Future versions may support all simultaneously.
+
+---
+
+# 207. PRIMARY MODEL FAMILY
+
+The project will use a diversified ensemble.
+
+Primary Models:
+
+XGBoost
+
+LightGBM
+
+LSTM
+
+GRU
+
+Future expansion remains possible.
+
+---
+
+# 208. WHY XGBOOST
+
+XGBoost remains one of the strongest models in quantitative finance.
+
+Advantages:
+
+Fast
+
+Robust
+
+Handles Nonlinear Relationships
+
+Handles Missing Values
+
+Provides Feature Importance
+
+Works well with tabular features
+
+---
+
+# 209. WHY LIGHTGBM
+
+LightGBM offers:
+
+Faster Training
+
+Lower Memory Usage
+
+Excellent Tabular Performance
+
+High Scalability
+
+Often performs similarly to XGBoost.
+
+---
+
+# 210. WHY SEQUENCE MODELS EXIST
+
+Markets possess memory.
+
+Yesterday matters.
+
+Last week matters.
+
+Last month matters.
+
+Tree models struggle with sequential memory.
+
+Sequence models address this weakness.
+
+---
+
+# 211. LSTM
+
+Long Short-Term Memory Networks.
+
+Purpose:
+
+Capture temporal dependencies.
+
+Useful when:
+
+Historical sequence structure matters.
+
+---
+
+# 212. GRU
+
+Gated Recurrent Unit.
+
+Purpose:
+
+Simpler alternative to LSTM.
+
+Benefits:
+
+Faster
+
+Lower Parameter Count
+
+Often similar performance.
+
+---
+
+# 213. MODEL DIVERSIFICATION PHILOSOPHY
+
+Each model specializes in different behavior.
+
+Example:
+
+XGBoost:
+
+Excellent at nonlinear tabular relationships.
+
+LSTM:
+
+Excellent at temporal memory.
+
+GRU:
+
+Excellent balance between speed and memory.
+
+Combining them improves robustness.
+
+---
+
+# 214. ENSEMBLE OUTPUT
+
+Individual models generate forecasts.
+
+The ensemble combines them into:
+
+Unified Prediction Probabilities.
+
+The ensemble is generally more stable than any individual model.
+
+---
+
+# 215. PRIMARY MODEL RESPONSIBILITY
+
+The primary ensemble performs only one task:
+
+Directional Forecasting.
+
+Example:
+
+Class 2:
+
+Strong Bullish
+
+Class 1:
+
+Neutral
+
+Class 0:
+
+Strong Bearish
+
+Nothing else.
+
+---
+
+# 216. WHY THE PRIMARY MODEL IS RESTRICTED
+
+Many trading systems fail because a single model attempts to solve:
+
+Direction
+
+Risk
+
+Position Sizing
+
+Execution
+
+simultaneously.
+
+This project separates responsibilities.
+
+---
+
+# 217. PRIMARY MODEL INPUTS
+
+Inputs may include:
+
+Price Features
+
+Volume Features
+
+OI Features
+
+FII/DII Features
+
+News Features
+
+Macro Features
+
+Regime Features
+
+Volatility Features
+
+Time Features
+
+---
+
+# 218. FEATURE FUSION
+
+Before training:
+
+All intelligence layers are merged.
+
+This creates:
+
+One unified feature matrix.
+
+The ML layer never directly queries raw databases.
+
+It consumes:
+
+Feature Store Outputs.
+
+---
+
+# 219. CHRONOLOGY SAFETY
+
+A strict rule:
+
+No future information may leak into training.
+
+All feature stores must provide:
+
+T-1 information
+
+for
+
+T predictions.
+
+This rule is non-negotiable.
+
+---
+
+# 220. TARGET LABELS
+
+Labels depend on prediction horizon.
+
+Examples:
+
+1-Minute Return
+
+5-Minute Return
+
+15-Minute Return
+
+1-Day Return
+
+Multi-Day Return
+
+Different horizons require separate models.
+
+---
+
+# 221. TRIPLE-BARRIER LABELING
+
+The project intends to use:
+
+Triple Barrier Labeling.
+
+Instead of:
+
+Arbitrary Up/Down Labels.
+
+---
+
+# 222. WHY TRIPLE-BARRIER LABELING
+
+Traditional labels are noisy.
+
+Triple Barrier introduces:
+
+Take Profit Barrier
+
+Stop Loss Barrier
+
+Time Expiration Barrier
+
+This produces cleaner labels.
+
+---
+
+# 223. BENEFITS OF TRIPLE BARRIER
+
+Improves:
+
+Signal Quality
+
+Risk Awareness
+
+Label Stability
+
+Strategy Realism
+
+---
+
+# 224. META-LABELING OVERVIEW
+
+Meta-labeling is one of the most important concepts in the project.
+
+Purpose:
+
+Evaluate prediction quality.
+
+Not direction.
+
+Quality.
+
+---
+
+# 225. PRIMARY VS META MODEL
+
+Primary Model:
+
+Predicts Direction.
+
+Meta Model:
+
+Predicts Probability Of Success.
+
+These are completely different tasks.
+
+---
+
+# 226. EXAMPLE
+
+Primary Model:
+
+BUY
+
+Meta Model:
+
+34% Success Probability
+
+Result:
+
+Trade Rejected.
+
+---
+
+Primary Model:
+
+BUY
+
+Meta Model:
+
+89% Success Probability
+
+Result:
+
+Trade Accepted.
+
+---
+
+# 227. WHY META-LABELING EXISTS
+
+Most false signals originate from:
+
+Low-confidence environments.
+
+Meta-labeling attempts to identify:
+
+Bad trades
+
+before execution.
+
+---
+
+# 228. META MODEL INPUTS
+
+Potential Inputs:
+
+HHMM State
+
+GARCH Volatility
+
+Time Of Day
+
+OI Z-Scores
+
+India VIX
+
+Spread Conditions
+
+CUSUM State
+
+News Shock Scores
+
+These are contextual features.
+
+---
+
+# 229. IMPORTANT RULE
+
+Primary Model Features
+
+must remain separate from
+
+Meta Model Features.
+
+This reduces:
+
+Feature Leakage
+
+Overfitting
+
+Model Contamination
+
+---
+
+# 230. CALIBRATION THRESHOLD
+
+Meta-labeler outputs:
+
+0 → 1
+
+representing confidence.
+
+Example:
+
+0.35
+
+0.61
+
+0.82
+
+0.94
+
+A threshold determines whether a trade survives.
+
+---
+
+# 231. FEATURE IMPORTANCE ANALYSIS
+
+Not all features are useful.
+
+The project must continuously evaluate:
+
+Feature Contribution.
+
+---
+
+# 232. FEATURE IMPORTANCE METHODS
+
+Potential Techniques:
+
+Gain Importance
+
+Permutation Importance
+
+SHAP Values
+
+Mean Decrease Accuracy
+
+Clustered Feature Importance
+
+---
+
+# 233. WHY FEATURE IMPORTANCE MATTERS
+
+Large feature sets often contain:
+
+Noise
+
+Redundancy
+
+Collinearity
+
+Feature importance identifies:
+
+Useful Information
+
+vs
+
+Garbage Information.
+
+---
+
+# 234. OVERFITTING PREVENTION
+
+A major objective.
+
+The project prioritizes:
+
+Generalization
+
+over
+
+Training Accuracy.
+
+---
+
+# 235. METHODS TO REDUCE OVERFITTING
+
+Walk Forward Validation
+
+Out-of-Sample Testing
+
+Feature Selection
+
+Chronology Enforcement
+
+Regularization
+
+Ensemble Diversification
+
+---
+
+# 236. SAMPLE WEIGHTING
+
+Future training may use:
+
+Sample Weights.
+
+Purpose:
+
+Emphasize important market periods.
+
+Examples:
+
+High Volatility Events
+
+Large Market Moves
+
+Rare Crashes
+
+Systemic Shocks
+
+---
+
+# 237. WHY SAMPLE WEIGHTING MATTERS
+
+Some observations contain more information than others.
+
+A 0.05% move
+
+and
+
+a 5% crash
+
+should not necessarily receive equal importance.
+
+---
+
+# 238. CROSS-LAYER LEARNING
+
+The ML layer learns interactions between:
+
+News
+
+OI
+
+Macro
+
+FII/DII
+
+Price
+
+Volume
+
+Mathematical Features
+
+This is where alpha may emerge.
+
+---
+
+# 239. MODEL OUTPUTS
+
+Potential Outputs:
+
+Bullish Probability
+
+Bearish Probability
+
+Neutral Probability
+
+Expected Return
+
+Expected Volatility
+
+Success Probability
+
+---
+
+# 240. MODEL RETRAINING PHILOSOPHY
+
+Markets evolve.
+
+Models cannot remain static forever.
+
+Future retraining may use:
+
+Rolling Windows
+
+Incremental Updates
+
+Walk Forward Retraining
+
+---
+
+# 241. ONLINE LEARNING
+
+Future versions may support:
+
+Rolling Learning.
+
+Example:
+
+Drop oldest data.
+
+Add newest data.
+
+Retrain periodically.
+
+This allows adaptation to changing markets.
+
+---
+
+# 242. WHY REINFORCEMENT LEARNING IS EXCLUDED
+
+Current project excludes:
+
+Reinforcement Learning.
+
+Reason:
+
+Complexity
+
+Instability
+
+Data Requirements
+
+Operational Risk
+
+The focus remains on:
+
+Supervised Learning.
+
+---
+
+# 243. MODEL EVALUATION METRICS
+
+Accuracy alone is insufficient.
+
+Additional metrics:
+
+Precision
+
+Recall
+
+F1
+
+ROC-AUC
+
+Profit Factor
+
+Sharpe Ratio
+
+Information Ratio
+
+Maximum Drawdown
+
+---
+
+# 244. DEFLATED SHARPE RATIO
+
+One of the most important validation metrics.
+
+Purpose:
+
+Detect false discoveries.
+
+Many strategies appear profitable due to randomness.
+
+DSR adjusts for:
+
+Multiple Testing Bias.
+
+---
+
+# 245. WHY DSR IS REQUIRED
+
+The project will test:
+
+Hundreds
+
+or
+
+Thousands
+
+of configurations.
+
+Without DSR:
+
+False Alpha becomes likely.
+
+---
+
+# 246. MODEL REGIME AWARENESS
+
+Models should be aware of:
+
+HHMM States
+
+Volatility States
+
+Macro States
+
+Time States
+
+This improves adaptability.
+
+---
+
+# 247. MULTI-HORIZON DESIGN
+
+The architecture eventually supports:
+
+Intraday Models
+
+Swing Models
+
+Positional Models
+
+using the same overall framework.
+
+Only data frequency changes.
+
+---
+
+# 248. INTRADAY MODEL
+
+Uses:
+
+1-Minute
+
+3-Minute
+
+5-Minute
+
+15-Minute
+
+Inputs.
+
+Designed for:
+
+MIS Trading.
+
+---
+
+# 249. SWING MODEL
+
+Uses:
+
+Hourly
+
+Daily
+
+Multi-Day
+
+Inputs.
+
+Designed for:
+
+NRML Trading.
+
+---
+
+# 250. ONE ARCHITECTURE TWO SPEEDS
+
+The project does not maintain:
+
+Two completely different systems.
+
+Instead:
+
+One architecture
+
+operates at
+
+multiple time horizons.
+
+---
+
+# 251. FINAL PURPOSE OF THE ML LAYER
+
+The ML Layer exists to convert:
+
+Market Intelligence
+
+into
+
+Probabilistic Trading Signals.
+
+It does not:
+
+Manage Risk
+
+Size Positions
+
+Place Orders
+
+Those responsibilities belong to later layers.
+
+---
+
+# 252. ML LAYER STATUS
+
+Current Status:
+
+PLANNED
+
+Not Yet Implemented.
+
+Future Core Models:
+
+XGBoost
+
+LightGBM
+
+LSTM
+
+GRU
+
+Meta-Labeler
+
+Feature Selection Engine
+
+Walk Forward Validation Framework
+
+DSR Validation Framework
+
+---
+
+# 253. LONG-TERM IMPORTANCE
+
+The ML Layer is the central prediction engine of the project.
+
+Every intelligence layer ultimately feeds into it.
+
+However:
+
+The quality of the ML Layer is entirely dependent on the quality of:
+
+OI Intelligence
+
+FII/DII Intelligence
+
+News Intelligence
+
+Macro Intelligence
+
+Mathematical Layer
+
+Therefore:
+
+The project prioritizes intelligence generation first and prediction second.
+
+---
+
+END OF PART 7

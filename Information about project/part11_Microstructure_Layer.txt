@@ -1,0 +1,891 @@
+# ABOUT_PROJECT.TXT
+
+# PART 11 — RESEARCH FRAMEWORK, BACKTESTING, VALIDATION, ALPHA DISCOVERY, WALK-FORWARD TESTING AND SCIENTIFIC MODEL EVALUATION
+
+---
+
+# 416. RESEARCH FRAMEWORK OVERVIEW
+
+The Research Framework is the scientific validation engine of the entire project.
+
+Every layer built before this point can generate:
+
+Features
+
+Signals
+
+Predictions
+
+Regimes
+
+Risk Metrics
+
+However:
+
+None of these have value unless they can be validated.
+
+The Research Framework exists to answer one question:
+
+"Does this actually work?"
+
+---
+
+# 417. PRIMARY PURPOSE
+
+The purpose of the Research Layer is not:
+
+Model Training.
+
+The purpose is:
+
+Model Verification.
+
+Signal Verification.
+
+Feature Verification.
+
+Alpha Verification.
+
+---
+
+# 418. WHY RESEARCH MATTERS
+
+Most retail trading systems suffer from:
+
+Curve Fitting
+
+Data Leakage
+
+Look-Ahead Bias
+
+Overfitting
+
+False Alpha
+
+Backtest Fraud
+
+The Research Layer exists specifically to prevent these failures.
+
+---
+
+# 419. CORE PHILOSOPHY
+
+The project assumes:
+
+Most discovered alpha is fake.
+
+Every feature is considered:
+
+Guilty
+
+until
+
+Proven Innocent.
+
+---
+
+# 420. RESEARCH PIPELINE
+
+Every feature must pass:
+
+Data Validation
+
+Chronology Validation
+
+Feature Validation
+
+Statistical Validation
+
+Financial Validation
+
+Production Validation
+
+before being trusted.
+
+---
+
+# 421. FEATURE VALIDATION
+
+Every new feature must answer:
+
+Does it contain information?
+
+Does it improve prediction?
+
+Does it improve Sharpe?
+
+Does it improve robustness?
+
+Does it survive out-of-sample testing?
+
+---
+
+# 422. ALPHA DEFINITION
+
+Alpha means:
+
+Predictive Information
+
+that improves trading performance.
+
+Not:
+
+Interesting Charts
+
+Interesting Correlations
+
+Interesting Stories
+
+---
+
+# 423. WHY CORRELATION IS NOT ENOUGH
+
+Many variables appear useful historically.
+
+However:
+
+Correlation does not imply predictive power.
+
+Therefore:
+
+Correlation alone is never sufficient.
+
+---
+
+# 424. INFORMATION COEFFICIENT (IC)
+
+One of the primary validation metrics.
+
+Purpose:
+
+Measure predictive relationship between:
+
+Feature
+
+and
+
+Future Return.
+
+---
+
+# 425. IC INTERPRETATION
+
+Positive IC:
+
+Feature has predictive value.
+
+Negative IC:
+
+Feature predicts opposite direction.
+
+Near Zero:
+
+Feature contains little information.
+
+---
+
+# 426. FEATURE RANKING
+
+All features should be ranked by:
+
+Predictive Utility.
+
+Examples:
+
+OI Features
+
+FII Features
+
+News Features
+
+Macro Features
+
+Microstructure Features
+
+---
+
+# 427. FEATURE IMPORTANCE AUDIT
+
+The project continuously evaluates:
+
+Which features matter.
+
+Which features are noise.
+
+Which features should be removed.
+
+---
+
+# 428. WHY FEATURE PRUNING MATTERS
+
+Large feature sets create:
+
+Overfitting
+
+Instability
+
+Noise
+
+Complexity
+
+Removing weak features often improves performance.
+
+---
+
+# 429. OI VALIDATION FRAMEWORK
+
+After collecting:
+
+30–60 Trading Days
+
+the OI Layer enters:
+
+Alpha Validation Phase.
+
+---
+
+# 430. OI VALIDATION QUESTIONS
+
+Do PCR changes predict returns?
+
+Do OI walls predict reversals?
+
+Does GEX predict volatility?
+
+Does ATM Flow predict momentum?
+
+Does Writing Detection add value?
+
+---
+
+# 431. OI VERSION 2 ENTRY CRITERIA
+
+Only after validation should new features be considered.
+
+Examples:
+
+OI Z-Score
+
+OI/OI Ratio
+
+Expiry Intelligence
+
+Gamma Squeeze Detection
+
+Multi-Expiry Analysis
+
+---
+
+# 432. FII/DII VALIDATION FRAMEWORK
+
+After:
+
+30–60 Trading Days
+
+evaluate:
+
+FII Net Flow
+
+Rolling Flow
+
+Flow Divergence
+
+Institutional Streaks
+
+---
+
+# 433. FII/DII QUESTIONS
+
+Does FII Net Flow predict T+1 returns?
+
+Does FII 5-Day Flow matter?
+
+Does DII absorption matter?
+
+Does divergence contain alpha?
+
+---
+
+# 434. NEWS VALIDATION FRAMEWORK
+
+News must answer:
+
+Does sentiment predict returns?
+
+Do event categories matter?
+
+Do entity weights matter?
+
+Does news velocity matter?
+
+Does sentiment decay improve prediction?
+
+---
+
+# 435. MACRO VALIDATION FRAMEWORK
+
+Evaluate:
+
+Interest Rate Features
+
+Inflation Features
+
+Liquidity Features
+
+Commodity Features
+
+Regime Features
+
+---
+
+# 436. VALIDATION PHILOSOPHY
+
+Every layer must prove:
+
+Economic Value.
+
+Not merely:
+
+Statistical Significance.
+
+---
+
+# 437. BACKTESTING OVERVIEW
+
+Backtesting simulates:
+
+Historical Trading.
+
+Purpose:
+
+Estimate real-world performance.
+
+---
+
+# 438. WHAT BACKTESTING SHOULD ANSWER
+
+Would the strategy have worked?
+
+How often?
+
+How much risk?
+
+How much drawdown?
+
+How much return?
+
+---
+
+# 439. DANGER OF BACKTESTS
+
+Most backtests are misleading.
+
+Reasons:
+
+Data Leakage
+
+Survivorship Bias
+
+Overfitting
+
+Look-Ahead Bias
+
+Selection Bias
+
+---
+
+# 440. CHRONOLOGY RULE
+
+No backtest may access:
+
+Future Information.
+
+Ever.
+
+This is non-negotiable.
+
+---
+
+# 441. LOOK-AHEAD BIAS
+
+Example:
+
+Using Tuesday data
+
+to predict Tuesday.
+
+This is forbidden.
+
+All feature stores must use:
+
+T-1 information only.
+
+---
+
+# 442. PURGED VALIDATION
+
+Future validation should use:
+
+Purged Training Windows.
+
+Purpose:
+
+Prevent information contamination.
+
+---
+
+# 443. EMBARGO PERIODS
+
+Future validation may use:
+
+Embargo Periods.
+
+Purpose:
+
+Prevent temporal leakage.
+
+---
+
+# 444. WALK-FORWARD TESTING
+
+Primary validation methodology.
+
+---
+
+# 445. WHY WALK-FORWARD EXISTS
+
+Markets evolve.
+
+A single train-test split is insufficient.
+
+Walk-forward testing simulates:
+
+Real deployment conditions.
+
+---
+
+# 446. WALK-FORWARD PROCESS
+
+Train:
+
+Historical Window
+
+Deploy:
+
+Future Window
+
+Advance Forward
+
+Repeat
+
+This mimics real trading.
+
+---
+
+# 447. BENEFITS OF WALK-FORWARD
+
+Provides:
+
+Realistic Validation
+
+Regime Testing
+
+Drift Detection
+
+Robustness Testing
+
+---
+
+# 448. EXPANDING WINDOW TESTING
+
+Future methodology.
+
+Training window grows over time.
+
+Used to test:
+
+Long-term stability.
+
+---
+
+# 449. ROLLING WINDOW TESTING
+
+Alternative methodology.
+
+Old data removed.
+
+New data added.
+
+Used for:
+
+Adaptive Systems.
+
+---
+
+# 450. REGIME VALIDATION
+
+Models must be tested across:
+
+Bull Markets
+
+Bear Markets
+
+Sideways Markets
+
+Crisis Markets
+
+---
+
+# 451. WHY REGIME TESTING MATTERS
+
+Many strategies only work:
+
+Under specific conditions.
+
+The project seeks:
+
+Regime Robustness.
+
+---
+
+# 452. PERFORMANCE METRICS
+
+Accuracy is not enough.
+
+Additional metrics required.
+
+---
+
+# 453. CORE METRICS
+
+Accuracy
+
+Precision
+
+Recall
+
+F1 Score
+
+ROC-AUC
+
+---
+
+# 454. FINANCIAL METRICS
+
+Sharpe Ratio
+
+Sortino Ratio
+
+Calmar Ratio
+
+Profit Factor
+
+Win Rate
+
+Expected Value
+
+---
+
+# 455. RISK METRICS
+
+Maximum Drawdown
+
+Average Drawdown
+
+Recovery Time
+
+Volatility
+
+Tail Risk
+
+---
+
+# 456. TRADE METRICS
+
+Average Holding Time
+
+Average Profit
+
+Average Loss
+
+Risk Reward Ratio
+
+Trade Frequency
+
+---
+
+# 457. SHARPE RATIO
+
+Measures:
+
+Risk-adjusted return.
+
+Widely used.
+
+However:
+
+Can be misleading.
+
+---
+
+# 458. WHY SHARPE IS NOT ENOUGH
+
+Testing many models increases chance of:
+
+False Discoveries.
+
+Therefore:
+
+Additional metrics are required.
+
+---
+
+# 459. DEFLATED SHARPE RATIO (DSR)
+
+One of the most important metrics.
+
+Purpose:
+
+Correct for multiple testing.
+
+---
+
+# 460. WHY DSR EXISTS
+
+If 1000 models are tested:
+
+Some will appear profitable by luck.
+
+DSR attempts to identify:
+
+Real Alpha
+
+vs
+
+Random Noise.
+
+---
+
+# 461. NON-NEGOTIABLE RULE
+
+Any model promoted to production must pass:
+
+DSR Validation.
+
+---
+
+# 462. FEATURE DISCOVERY FRAMEWORK
+
+Future research may continuously test:
+
+New OI Features
+
+New News Features
+
+New Macro Features
+
+New Microstructure Features
+
+---
+
+# 463. FEATURE PROMOTION RULE
+
+New features are not automatically accepted.
+
+They must:
+
+Improve performance
+
+without
+
+Increasing instability.
+
+---
+
+# 464. ABLATION TESTING
+
+Purpose:
+
+Measure contribution of each feature group.
+
+---
+
+# 465. EXAMPLE
+
+Model A:
+
+With News
+
+Model B:
+
+Without News
+
+Difference reveals:
+
+News Value.
+
+---
+
+# 466. SIGNAL DECAY ANALYSIS
+
+Purpose:
+
+Determine how long information remains useful.
+
+Examples:
+
+News
+
+OI
+
+Flows
+
+Macro
+
+---
+
+# 467. WHY SIGNAL DECAY MATTERS
+
+Some information expires quickly.
+
+Some remains useful for weeks.
+
+This affects:
+
+Model Design.
+
+---
+
+# 468. ALPHA HALF-LIFE
+
+Future metric.
+
+Measures:
+
+How quickly predictive power decays.
+
+---
+
+# 469. FAILURE ANALYSIS
+
+All losing periods should be investigated.
+
+Questions:
+
+What failed?
+
+Why?
+
+Under which regime?
+
+Can it be fixed?
+
+---
+
+# 470. MODEL COMPARISON FRAMEWORK
+
+Every model should compete against:
+
+Baselines.
+
+---
+
+# 471. BASELINES
+
+Buy and Hold
+
+Random Predictor
+
+Simple Momentum
+
+Simple Mean Reversion
+
+---
+
+# 472. WHY BASELINES MATTER
+
+A sophisticated model that cannot beat:
+
+Simple Momentum
+
+has little value.
+
+---
+
+# 473. RESEARCH DATABASE
+
+All experiments should be logged.
+
+Store:
+
+Parameters
+
+Metrics
+
+Results
+
+Versions
+
+Dates
+
+---
+
+# 474. REPRODUCIBILITY
+
+Every experiment must be reproducible.
+
+Future researchers should be able to:
+
+Recreate results exactly.
+
+---
+
+# 475. VERSION CONTROL
+
+Research must be versioned.
+
+Purpose:
+
+Track evolution of ideas.
+
+---
+
+# 476. RESEARCH LAYER STATUS
+
+Current Status:
+
+PLANNED
+
+Not Yet Implemented.
+
+---
+
+# 477. LONG-TERM OBJECTIVE
+
+Create a professional-grade quantitative research framework.
+
+The framework should be capable of:
+
+Validating Features
+
+Validating Models
+
+Validating Strategies
+
+Validating Alpha
+
+before any capital is exposed.
+
+---
+
+# 478. FINAL PHILOSOPHY
+
+Predictions are easy.
+
+Proof is difficult.
+
+The Research Framework exists to ensure that every component of the project is scientifically validated before it influences real trading decisions.
+
+---
+
+END OF PART 11

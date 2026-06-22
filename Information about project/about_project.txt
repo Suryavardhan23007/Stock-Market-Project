@@ -1,0 +1,14 @@
+Part 1 — Vision, Philosophy, High-Level Architecture
+Part 2 — Database Architecture + OI Intelligence Layer
+Part 3 — FII/DII Intelligence Layer
+Part 4 — News Intelligence Layer
+Part 5 — Macro Intelligence Layer
+Part 6 — Mathematical Layer (HHMM, GARCH, CUSUM, Fractional Differentiation, etc.)
+Part 7 — ML Layer (XGBoost, LightGBM, Meta-Labeling, Feature Selection, Training Framework)
+Part 8 — Fusion Layer (how all intelligence layers combine)
+Part 9 — Risk & Execution Layer (Triple Barrier, Fractional Kelly, Position Sizing, Order Management)
+Part 10 — Intraday & Swing Trading Pipelines
+Part 11 — Microstructure Layer (OFI, Depth, Bid/Ask, Microprice)
+Part 12 — Research Framework, Validation, Backtesting, DSR, Walk-Forward Testing
+Part 13 — Development Roadmap, Versioning, Non-Negotiable Rules, Future Upgrades
+PART 14 — CANONICAL DATA SCHEMAS, FEATURE DICTIONARY, FEATURE OWNERSHIP, CHRONOLOGY RULES AND MASTER REFERENCE MANUAL

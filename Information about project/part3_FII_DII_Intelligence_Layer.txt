@@ -1,0 +1,740 @@
+# ABOUT_PROJECT.TXT
+
+# PART 3 — FII/DII INTELLIGENCE LAYER, INSTITUTIONAL FLOW ANALYSIS, CHRONOLOGY PROTECTION AND POST-COLLECTION RESEARCH FRAMEWORK
+
+---
+
+# 48. FII/DII INTELLIGENCE LAYER OVERVIEW
+
+The FII/DII Intelligence Layer is the second major intelligence layer in the project.
+
+Purpose:
+
+To measure the behavior of institutional capital in the Indian equity market.
+
+While the OI Layer focuses on derivative positioning, the FII/DII Layer focuses on actual capital movement.
+
+The OI layer answers:
+
+"What are derivative participants doing?"
+
+The FII/DII layer answers:
+
+"Where is institutional money flowing?"
+
+These are related but fundamentally different questions.
+
+Both layers are required.
+
+---
+
+# 49. WHY FII/DII DATA MATTERS
+
+Markets are not moved primarily by retail traders.
+
+Large movements are usually driven by:
+
+Foreign Institutional Investors (FII/FPI)
+
+and
+
+Domestic Institutional Investors (DII)
+
+because these entities control enormous pools of capital.
+
+Examples:
+
+Mutual Funds
+
+Insurance Companies
+
+Pension Funds
+
+Sovereign Funds
+
+Foreign Asset Managers
+
+Global Hedge Funds
+
+When these participants aggressively accumulate positions, market structure changes.
+
+Therefore:
+
+Institutional flows provide information that price alone cannot reveal.
+
+---
+
+# 50. CORE HYPOTHESIS OF THE FII/DII LAYER
+
+The hypothesis is simple:
+
+Persistent institutional buying or selling creates market pressure that can influence future returns.
+
+Examples:
+
+5-day FII Buying Streak
+
+may indicate:
+
+Sustained foreign capital inflows.
+
+5-day FII Selling Streak
+
+may indicate:
+
+Persistent capital withdrawal.
+
+Similarly:
+
+FII and DII divergence can reveal market conflict.
+
+Example:
+
+FIIs aggressively selling
+
+while
+
+DIIs aggressively buying.
+
+This often signals institutional disagreement.
+
+Such disagreements can become useful predictive features.
+
+---
+
+# 51. DATA SOURCE PHILOSOPHY
+
+Unlike OI data, FII/DII data is published daily.
+
+The layer uses official NSE disclosures.
+
+Empirical verification was performed before implementation.
+
+The architecture was not built using assumptions.
+
+The actual NSE payload was captured and verified.
+
+Example payload:
+
+```json
+[
+ {
+  "buyValue":"13553.36",
+  "category":"DII",
+  "date":"16-Jun-2026",
+  "netValue":"0.06",
+  "sellValue":"13553.30"
+ },
+ {
+  "buyValue":"13887.15",
+  "category":"FII/FPI",
+  "date":"16-Jun-2026",
+  "netValue":"-749.18",
+  "sellValue":"14636.33"
+ }
+]
+```
+
+The architecture was then built around this verified structure.
+
+---
+
+# 52. FORWARD COLLECTION PHILOSOPHY
+
+Historical institutional flow data is difficult to obtain consistently and freely.
+
+Therefore:
+
+The architecture follows:
+
+Forward Collection Strategy.
+
+The objective is:
+
+Collect daily flow data continuously.
+
+Build a growing institutional flow archive.
+
+Use this archive for future research.
+
+---
+
+# 53. FII/DII LAYER OBJECTIVES
+
+The layer attempts to answer:
+
+Are institutions buying?
+
+Are institutions selling?
+
+Who is dominant?
+
+Are FIIs stronger?
+
+Are DIIs stronger?
+
+Are institutions aligned?
+
+Are institutions fighting each other?
+
+Are flows accelerating?
+
+Are flows weakening?
+
+---
+
+# 54. RAW ARCHIVE PRINCIPLE
+
+Just like the OI layer:
+
+Raw data must never be discarded.
+
+A dedicated raw archive exists.
+
+Purpose:
+
+Preserve original source information forever.
+
+This archive becomes the source of truth.
+
+Future feature engineering must always be reproducible from the raw archive.
+
+---
+
+# 55. RAW ARCHIVE TABLE
+
+Primary Table:
+
+fii_dii_raw_archive
+
+Purpose:
+
+Store original NSE payload.
+
+Nothing is engineered here.
+
+Nothing is transformed here.
+
+Only preservation occurs.
+
+---
+
+# 56. WHY RAW ARCHIVES EXIST
+
+Many future features do not exist today.
+
+Examples:
+
+Institutional Flow Acceleration
+
+Institutional Z-Scores
+
+Flow Percentiles
+
+Institutional Regimes
+
+Cross-Market Flow Correlation
+
+Because raw archives exist:
+
+All future research remains possible.
+
+Without raw archives:
+
+Future feature engineering becomes impossible.
+
+---
+
+# 57. INTELLIGENCE TABLE
+
+The engineered intelligence is stored separately.
+
+Primary Table:
+
+institutional_flow_intelligence
+
+Purpose:
+
+Store engineered institutional flow features.
+
+---
+
+# 58. RAW FEATURES
+
+The following are stored:
+
+FII Buy
+
+FII Sell
+
+FII Net
+
+DII Buy
+
+DII Sell
+
+DII Net
+
+These form the atomic units of institutional flow analysis.
+
+---
+
+# 59. DIVERGENCE FEATURE
+
+Purpose:
+
+Measure conflict between FIIs and DIIs.
+
+Formula Concept:
+
+FII Net
+minus
+DII Net
+
+Interpretation:
+
+Large Positive Divergence
+
+FII dominance.
+
+Large Negative Divergence
+
+DII dominance.
+
+High divergence often signals meaningful market disagreement.
+
+---
+
+# 60. ROLLING FLOW FEATURES
+
+Institutional behavior should not be analyzed using single-day observations.
+
+Therefore:
+
+Rolling flow windows are calculated.
+
+Examples:
+
+3 Day Flow
+
+5 Day Flow
+
+10 Day Flow
+
+20 Day Flow
+
+Purpose:
+
+Measure sustained accumulation or distribution.
+
+---
+
+# 61. WHY ROLLING FLOWS MATTER
+
+Single-day flows can be noisy.
+
+Rolling flows reveal:
+
+Trend persistence.
+
+Capital migration.
+
+Institutional conviction.
+
+This often contains more information than a single day's activity.
+
+---
+
+# 62. PARTICIPATION FEATURES
+
+Purpose:
+
+Determine who is driving market activity.
+
+Examples:
+
+Total Institutional Flow
+
+FII Flow Share
+
+DII Flow Share
+
+These features help identify dominant market participants.
+
+---
+
+# 63. STREAK FEATURES
+
+Purpose:
+
+Measure persistence.
+
+Examples:
+
+FII Buy Streak
+
+FII Sell Streak
+
+DII Buy Streak
+
+DII Sell Streak
+
+Institutional behavior often exhibits persistence.
+
+Tracking streaks helps quantify that persistence.
+
+---
+
+# 64. FEATURE STORE PHILOSOPHY
+
+Raw intelligence tables should never be directly consumed by models.
+
+Instead:
+
+Feature Store APIs create:
+
+Training Matrices
+
+Inference Matrices
+
+Chronology-Safe Datasets
+
+This guarantees consistency.
+
+---
+
+# 65. THE BIGGEST RISK: LOOK-AHEAD BIAS
+
+Institutional data is published after market close.
+
+This creates a dangerous trap.
+
+Example:
+
+Monday flows become available Monday evening.
+
+A model must never use:
+
+Monday evening information
+
+to predict:
+
+Monday market behavior.
+
+That would be cheating.
+
+---
+
+# 66. CHRONOLOGY HARDENING
+
+The architecture enforces:
+
+Strict T-1 Logic.
+
+Meaning:
+
+Prediction for Day T
+
+may only use
+
+Institutional data from Day T-1.
+
+This is mandatory.
+
+---
+
+# 67. SHIFTED FEATURE STORE
+
+A dedicated API exists:
+
+get_shifted_features_for_inference()
+
+Purpose:
+
+Prevent accidental leakage.
+
+The API physically shifts the feature matrix forward.
+
+Example:
+
+Tuesday Prediction
+
+receives
+
+Monday Flows.
+
+Monday Prediction
+
+receives
+
+Friday Flows.
+
+This guarantees chronology safety.
+
+---
+
+# 68. UNIT TEST VERIFICATION
+
+Chronology protection is not merely documented.
+
+It is tested.
+
+A dedicated pytest unit test verifies:
+
+Friday → Monday mapping.
+
+Monday → Tuesday mapping.
+
+No same-day leakage.
+
+The test passes successfully.
+
+This makes chronology protection verifiable rather than theoretical.
+
+---
+
+# 69. WHY THIS IS IMPORTANT
+
+Many financial research projects fail because of hidden look-ahead bias.
+
+A model appears brilliant.
+
+Then fails in production.
+
+The chronology hardening architecture exists specifically to prevent this.
+
+---
+
+# 70. DAILY COLLECTION PROCESS
+
+Collection occurs after official publication.
+
+Workflow:
+
+Fetch NSE Data
+
+Validate Payload
+
+Verify Arithmetic
+
+Generate Features
+
+Store Raw Archive
+
+Store Intelligence Record
+
+Update Feature Store
+
+Commit To Database
+
+---
+
+# 71. DUPLICATE PROTECTION
+
+The architecture prevents duplicate entries.
+
+Re-running collection does not create corruption.
+
+Instead:
+
+Upsert logic updates safely.
+
+This guarantees database consistency.
+
+---
+
+# 72. HEALTH MONITORING
+
+The system tracks:
+
+Latest Trade Date
+
+Rows Collected
+
+Expected Trading Days
+
+Missing Days
+
+Data Freshness
+
+Collection Success
+
+This ensures collection remains reliable.
+
+---
+
+# 73. WHY THIS LAYER IS FROZEN
+
+Current architecture already preserves:
+
+Raw Data
+
+Engineered Features
+
+Chronology
+
+Monitoring
+
+Feature Store
+
+Collection Pipeline
+
+Therefore:
+
+Additional engineering currently provides little value.
+
+Collecting data is more valuable than adding features.
+
+---
+
+# 74. POST-COLLECTION RESEARCH PHILOSOPHY
+
+The goal is not:
+
+Collect data forever.
+
+The goal is:
+
+Validate predictive usefulness.
+
+Data collection enables future research.
+
+Research determines whether institutional flows contain alpha.
+
+---
+
+# 75. 30-DAY AUDIT
+
+After approximately 30 trading days:
+
+The first validation audit occurs.
+
+Objectives:
+
+Correlation Analysis
+
+Information Coefficient
+
+Forward Return Mapping
+
+Feature Stability
+
+Chronology Verification
+
+Purpose:
+
+Determine whether institutional flows contain measurable predictive information.
+
+---
+
+# 76. 60-DAY AUDIT
+
+After approximately 60 trading days:
+
+Advanced validation begins.
+
+Objectives:
+
+Feature Ranking
+
+Signal Stability
+
+Regime Dependency
+
+Alpha Persistence
+
+Predictive Consistency
+
+Institutional Flow Quality Assessment
+
+This determines which features survive into the final model.
+
+---
+
+# 77. VERSION 2 ROADMAP
+
+Future upgrades are documented but intentionally not implemented.
+
+Potential additions:
+
+Flow Z-Scores
+
+Flow Percentiles
+
+Flow Acceleration
+
+Institutional Regime Detection
+
+Cross-Market Flow Models
+
+Sector Flow Analysis
+
+Normalized Flow Features
+
+Institutional Breadth Models
+
+These remain future enhancements.
+
+They are not required today.
+
+---
+
+# 78. FII/DII LAYER STATUS
+
+Raw Archive:
+COMPLETE
+
+Intelligence Engine:
+COMPLETE
+
+Feature Store:
+COMPLETE
+
+Chronology Protection:
+COMPLETE
+
+Unit Testing:
+COMPLETE
+
+Monitoring:
+COMPLETE
+
+Collection:
+ACTIVE
+
+Status:
+FROZEN + COLLECTING
+
+---
+
+# 79. ROLE OF THE FII/DII LAYER IN THE FINAL SYSTEM
+
+The FII/DII layer is not a prediction model.
+
+It is an intelligence provider.
+
+Its responsibility is:
+
+Measure institutional behavior.
+
+The Fusion Layer will eventually combine:
+
+Price Features
+
+OI Features
+
+FII/DII Features
+
+News Features
+
+Macro Features
+
+into a unified predictive framework.
+
+The FII/DII layer contributes one piece of evidence.
+
+It never makes trading decisions by itself.
+
+---
+
+END OF PART 3

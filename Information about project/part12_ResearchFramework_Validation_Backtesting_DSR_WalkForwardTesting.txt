@@ -1,0 +1,961 @@
+# ABOUT_PROJECT.TXT
+
+# PART 12 — SYSTEM ARCHITECTURE, ENGINEERING STANDARDS, DATA PIPELINES, MONITORING, STORAGE, AUTOMATION AND PRODUCTION INFRASTRUCTURE
+
+---
+
+# 479. SYSTEM ARCHITECTURE OVERVIEW
+
+The purpose of this section is to define how the project operates as a software system.
+
+Previous sections described:
+
+Market Intelligence
+
+Mathematical Models
+
+Machine Learning
+
+Risk Management
+
+Research
+
+This section describes:
+
+How everything physically runs.
+
+---
+
+# 480. CORE PHILOSOPHY
+
+A profitable model is useless if:
+
+Data collection stops.
+
+Databases fail.
+
+Processes crash.
+
+Features disappear.
+
+Servers reboot.
+
+Therefore:
+
+Engineering reliability is treated as a first-class requirement.
+
+---
+
+# 481. PROJECT DESIGN PRINCIPLE
+
+The architecture follows:
+
+Collection
+
+→
+
+Storage
+
+→
+
+Intelligence
+
+→
+
+Feature Stores
+
+→
+
+Fusion
+
+→
+
+Prediction
+
+→
+
+Risk
+
+→
+
+Execution
+
+Every stage must be:
+
+Independent
+
+Auditable
+
+Recoverable
+
+---
+
+# 482. MODULAR ARCHITECTURE
+
+Each intelligence layer operates independently.
+
+Examples:
+
+OI Intelligence
+
+FII/DII Intelligence
+
+News Intelligence
+
+Macro Intelligence
+
+Future Microstructure Intelligence
+
+Each module owns:
+
+Collection
+
+Processing
+
+Validation
+
+Feature Store
+
+Documentation
+
+---
+
+# 483. WHY MODULARITY MATTERS
+
+A failure in:
+
+News Layer
+
+must never crash:
+
+OI Layer.
+
+A failure in:
+
+FII Layer
+
+must never crash:
+
+Execution Layer.
+
+Isolation improves reliability.
+
+---
+
+# 484. DIRECTORY STRUCTURE PHILOSOPHY
+
+The project uses dedicated intelligence folders.
+
+Example:
+
+src/
+
+oi_intelligence/
+
+fii_dii_intelligence/
+
+news_intelligence/
+
+macro_intelligence/
+
+fusion_layer/
+
+training/
+
+shared/
+
+This structure is mandatory.
+
+---
+
+# 485. INTELLIGENCE LAYER STANDARD
+
+Every intelligence layer must contain:
+
+README.md
+
+RUNBOOK.txt
+
+FEATURES.txt
+
+ARCHITECTURE.txt
+
+Feature Store
+
+Validation Logic
+
+Monitoring
+
+Collection Scripts
+
+---
+
+# 486. WHY DOCUMENTATION MATTERS
+
+Future developers should be able to understand:
+
+Purpose
+
+Features
+
+Execution
+
+Dependencies
+
+without reading thousands of lines of code.
+
+---
+
+# 487. RAW DATA FIRST PRINCIPLE
+
+The project never stores:
+
+Only engineered features.
+
+Instead:
+
+Raw data is preserved first.
+
+Examples:
+
+Raw Options Chain
+
+Raw FII/DII Payload
+
+Raw News Articles
+
+Raw Macro Releases
+
+This allows future reconstruction.
+
+---
+
+# 488. DATA IMMUTABILITY
+
+Raw archives are treated as:
+
+Permanent records.
+
+They should never be overwritten.
+
+Only appended.
+
+---
+
+# 489. DATABASE PHILOSOPHY
+
+Databases exist for:
+
+Historical Preservation
+
+Feature Engineering
+
+Validation
+
+Backtesting
+
+Research
+
+Auditability
+
+Not merely storage.
+
+---
+
+# 490. PRIMARY DATABASE
+
+Current database:
+
+PostgreSQL
+
+Purpose:
+
+Reliability
+
+Scalability
+
+Partitioning
+
+Research Support
+
+---
+
+# 491. DATABASE DESIGN PRINCIPLE
+
+Every table should answer:
+
+Can future researchers reconstruct the original event?
+
+If the answer is:
+
+No
+
+the schema is incomplete.
+
+---
+
+# 492. PARTITIONING
+
+Large tables must be partitioned.
+
+Especially:
+
+Options Data
+
+Future Tick Data
+
+Microstructure Data
+
+Purpose:
+
+Prevent index bloat.
+
+Maintain insertion speed.
+
+Improve query performance.
+
+---
+
+# 493. CURRENT PARTITIONING
+
+The OI archive currently uses:
+
+Time-Based Partitioning.
+
+This is mandatory for long-term collection.
+
+---
+
+# 494. STORAGE GROWTH MONITORING
+
+Database growth must be continuously tracked.
+
+Metrics:
+
+Database Size
+
+Table Size
+
+Partition Size
+
+Index Size
+
+Growth Rate
+
+---
+
+# 495. LONG-TERM STORAGE STRATEGY
+
+Future architecture may include:
+
+Cold Storage
+
+Parquet Archives
+
+Cloud Storage
+
+Compressed Historical Data
+
+Purpose:
+
+Unlimited scalability.
+
+---
+
+# 496. TIMESCALEDB FUTURE OPTION
+
+Future optimization:
+
+TimescaleDB
+
+Benefits:
+
+Compression
+
+Time-Series Queries
+
+Chunk Management
+
+Improved Scalability
+
+---
+
+# 497. COLLECTION DAEMONS
+
+Collection processes must operate independently.
+
+Examples:
+
+OI Daemon
+
+News Daemon
+
+Macro Collector
+
+Future Microstructure Collector
+
+---
+
+# 498. WHY DAEMONS EXIST
+
+Market data must be collected continuously.
+
+Manual collection is unacceptable.
+
+---
+
+# 499. OI DAEMON
+
+Current production collector.
+
+Responsibilities:
+
+Options Collection
+
+OI Collection
+
+Storage
+
+Recovery
+
+Monitoring
+
+---
+
+# 500. DAEMON REQUIREMENTS
+
+Every daemon must support:
+
+Infinite Runtime
+
+Graceful Shutdown
+
+Exception Recovery
+
+Automatic Restart
+
+Health Reporting
+
+---
+
+# 501. PM2 PROCESS MANAGEMENT
+
+Current process supervisor:
+
+PM2
+
+Responsibilities:
+
+Auto Restart
+
+Crash Recovery
+
+Log Aggregation
+
+Startup Management
+
+---
+
+# 502. WHY PM2 IS USED
+
+A process should survive:
+
+Terminal Closure
+
+Process Failure
+
+Unexpected Exceptions
+
+System Restart
+
+---
+
+# 503. STARTUP PERSISTENCE
+
+Processes must automatically restart:
+
+After Reboot.
+
+Manual intervention should be minimized.
+
+---
+
+# 504. LOGGING PHILOSOPHY
+
+Every critical event must be logged.
+
+Examples:
+
+Collection Success
+
+Collection Failure
+
+Authentication Refresh
+
+Database Reconnect
+
+System Restart
+
+---
+
+# 505. LOG RETENTION
+
+Logs should remain available for:
+
+Debugging
+
+Auditing
+
+Failure Analysis
+
+---
+
+# 506. HEALTH MONITORING
+
+Every layer should expose:
+
+Health Metrics.
+
+---
+
+# 507. HEALTH DASHBOARD REQUIREMENTS
+
+Display:
+
+Collector Status
+
+Database Status
+
+Rows Collected
+
+Latest Timestamp
+
+Missing Records
+
+Restart Count
+
+Auth Refresh Count
+
+Success Rate
+
+---
+
+# 508. WHY HEALTH DASHBOARDS EXIST
+
+The first sign of failure should be visible immediately.
+
+Silent failures are unacceptable.
+
+---
+
+# 509. BACKUP PHILOSOPHY
+
+Data collection without backups is dangerous.
+
+The project must support:
+
+Automated Backups.
+
+---
+
+# 510. DAILY BACKUPS
+
+PostgreSQL backups should occur:
+
+Daily.
+
+Purpose:
+
+Disaster Recovery.
+
+---
+
+# 511. BACKUP COMPRESSION
+
+Backups should be:
+
+Compressed
+
+Versioned
+
+Timestamped
+
+---
+
+# 512. BACKUP RETENTION
+
+Maintain multiple generations.
+
+Examples:
+
+Daily
+
+Weekly
+
+Monthly
+
+Backups.
+
+---
+
+# 513. BACKUP VERIFICATION
+
+Backups are useless unless tested.
+
+Every backup should periodically undergo:
+
+Restore Testing.
+
+---
+
+# 514. RESTORE TESTING
+
+Process:
+
+Create Temporary Database
+
+Restore Backup
+
+Verify Schema
+
+Verify Row Counts
+
+Delete Temporary Database
+
+---
+
+# 515. COLLECTION HEALTH MONITORING
+
+Each layer should track:
+
+Expected Records
+
+Received Records
+
+Missing Records
+
+Collection Success Rate
+
+---
+
+# 516. MISSING DATA DETECTION
+
+The system must identify:
+
+Data Gaps
+
+immediately.
+
+---
+
+# 517. CHRONOLOGY SAFETY
+
+One of the most important engineering rules.
+
+No system component may access:
+
+Future Information.
+
+Ever.
+
+---
+
+# 518. LOOK-AHEAD PREVENTION
+
+Feature Stores must provide:
+
+Shifted Features
+
+where required.
+
+Example:
+
+FII/DII Layer.
+
+---
+
+# 519. UNIT TESTING
+
+Every critical component should have:
+
+Automated Tests.
+
+---
+
+# 520. TEST CATEGORIES
+
+Collection Tests
+
+Feature Tests
+
+Chronology Tests
+
+Database Tests
+
+Validation Tests
+
+---
+
+# 521. CHRONOLOGY TESTS
+
+Mandatory.
+
+Purpose:
+
+Prove look-ahead bias is impossible.
+
+---
+
+# 522. FAILURE RECOVERY
+
+Every system must assume:
+
+Failures will happen.
+
+Examples:
+
+Network Failure
+
+Broker Failure
+
+Database Failure
+
+Authentication Failure
+
+---
+
+# 523. AUTOMATIC RECOVERY
+
+Collectors should recover automatically whenever possible.
+
+Manual intervention should be minimized.
+
+---
+
+# 524. AUTHENTICATION RECOVERY
+
+If broker sessions expire:
+
+Automatic re-authentication should occur.
+
+---
+
+# 525. DATABASE RECOVERY
+
+If PostgreSQL disconnects:
+
+Connections should be rebuilt automatically.
+
+---
+
+# 526. NETWORK RECOVERY
+
+Temporary internet failures should not terminate collectors.
+
+---
+
+# 527. ASYNCHRONOUS ARCHITECTURE
+
+Future architecture will use:
+
+Async Pipelines.
+
+Purpose:
+
+Reduce blocking.
+
+Improve responsiveness.
+
+---
+
+# 528. WHY ASYNC MATTERS
+
+Heavy NLP processing should never block:
+
+Market Collection
+
+Execution
+
+Risk Management
+
+---
+
+# 529. PROCESS SEPARATION
+
+Execution Engine
+
+must remain isolated from:
+
+News Processing
+
+Model Training
+
+Research
+
+---
+
+# 530. LATENCY PHILOSOPHY
+
+Different components have different latency requirements.
+
+Examples:
+
+Execution:
+
+Milliseconds
+
+News:
+
+Seconds
+
+Research:
+
+Minutes or Hours
+
+---
+
+# 531. FINBERT LATENCY STRATEGY
+
+FinBERT must operate:
+
+Outside critical execution paths.
+
+---
+
+# 532. FUTURE MODEL OPTIMIZATION
+
+Potential deployment targets:
+
+ONNX Runtime
+
+TensorRT
+
+Purpose:
+
+Reduced inference latency.
+
+---
+
+# 533. GLOBAL STATE MANAGEMENT
+
+Certain components may publish:
+
+Current Intelligence State
+
+for use by other modules.
+
+---
+
+# 534. VERSION CONTROL
+
+Every major change must be versioned.
+
+Examples:
+
+V1
+
+V2
+
+Future Updates
+
+---
+
+# 535. FREEZE PHILOSOPHY
+
+Layers should be frozen once:
+
+Collection is operational.
+
+Constant modifications are discouraged.
+
+---
+
+# 536. WHY FREEZING MATTERS
+
+Stable collection produces:
+
+Reliable research datasets.
+
+Constant schema changes produce:
+
+Inconsistent datasets.
+
+---
+
+# 537. PRODUCTION READINESS CRITERIA
+
+A layer is considered production-ready only if:
+
+Collection Works
+
+Storage Works
+
+Monitoring Works
+
+Backups Work
+
+Recovery Works
+
+Documentation Exists
+
+---
+
+# 538. ENGINEERING PRIORITY ORDER
+
+Reliability
+
+Data Integrity
+
+Chronology Safety
+
+Monitoring
+
+Performance
+
+Optimization
+
+---
+
+# 539. FUTURE DEPLOYMENT POSSIBILITIES
+
+Current:
+
+Single Machine
+
+Future:
+
+Dedicated Server
+
+Cloud Infrastructure
+
+Hybrid Deployment
+
+---
+
+# 540. LONG-TERM GOAL
+
+The project should eventually function as:
+
+A self-maintaining market intelligence platform
+
+capable of collecting, validating, storing, monitoring and serving market intelligence with minimal human intervention.
+
+---
+
+# 541. FINAL PHILOSOPHY
+
+Good models create opportunities.
+
+Good engineering preserves those opportunities.
+
+Without reliable infrastructure:
+
+Even the best trading model becomes unusable.
+
+Therefore:
+
+Engineering quality is treated as equally important as model quality.
+
+---
+
+END OF PART 12

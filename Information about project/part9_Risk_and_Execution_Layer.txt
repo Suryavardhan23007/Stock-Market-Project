@@ -1,0 +1,979 @@
+# ABOUT_PROJECT.TXT
+
+# PART 9 — RISK MANAGEMENT, EXECUTION LAYER, POSITION SIZING, TRADE LIFECYCLE AND CAPITAL PRESERVATION
+
+---
+
+# 301. RISK & EXECUTION LAYER OVERVIEW
+
+The Risk & Execution Layer is the final decision enforcement layer of the project.
+
+Everything before this point is designed to answer:
+
+"What should we do?"
+
+The Risk & Execution Layer answers:
+
+"How much should we do?"
+
+and
+
+"Should we do it at all?"
+
+This distinction is critical.
+
+Many trading systems fail not because their predictions are wrong.
+
+They fail because:
+
+Risk Management is poor.
+
+---
+
+# 302. PRIMARY RESPONSIBILITY
+
+The Risk Layer is responsible for:
+
+Position Sizing
+
+Capital Allocation
+
+Trade Validation
+
+Trade Approval
+
+Risk Control
+
+Stop Loss Management
+
+Take Profit Management
+
+Execution Management
+
+Portfolio Protection
+
+---
+
+# 303. CORE PHILOSOPHY
+
+The project assumes:
+
+Risk Management is more important than prediction.
+
+A mediocre model with excellent risk management can survive.
+
+An excellent model with poor risk management eventually blows up.
+
+Therefore:
+
+Risk is treated as a first-class component.
+
+---
+
+# 304. THE MOST IMPORTANT RULE
+
+Protect Capital First.
+
+Generate Alpha Second.
+
+No trade is mandatory.
+
+Survival is mandatory.
+
+---
+
+# 305. TRADE PIPELINE
+
+The decision flow becomes:
+
+Intelligence Layers
+→
+Fusion Layer
+→
+ML Layer
+→
+Meta-Labeler
+→
+Risk Layer
+→
+Execution Layer
+→
+Broker
+
+This is the final path before capital is exposed.
+
+---
+
+# 306. WHY THE RISK LAYER EXISTS
+
+Suppose:
+
+ML Model says BUY.
+
+Probability:
+
+55%
+
+Should we invest:
+
+1%
+
+10%
+
+50%
+
+100%
+
+The ML model cannot answer this.
+
+The Risk Layer must answer it.
+
+---
+
+# 307. POSITION SIZING OVERVIEW
+
+Position sizing determines:
+
+How much capital enters a trade.
+
+This often has more impact on profitability than signal accuracy.
+
+---
+
+# 308. POSITION SIZING PRINCIPLE
+
+The project does not use:
+
+Fixed Capital Allocation.
+
+Example:
+
+Always invest ₹10,000.
+
+This approach ignores:
+
+Volatility
+
+Confidence
+
+Market Conditions
+
+Risk
+
+---
+
+# 309. PRIMARY POSITION SIZING MODEL
+
+Fractional Kelly Criterion
+
+will be used.
+
+---
+
+# 310. WHY NOT FULL KELLY
+
+Full Kelly is mathematically optimal.
+
+However:
+
+It is extremely aggressive.
+
+Produces:
+
+Large Drawdowns
+
+High Emotional Stress
+
+High Volatility of Equity Curve
+
+Professional traders rarely use:
+
+100% Kelly.
+
+---
+
+# 311. FRACTIONAL KELLY
+
+Instead:
+
+Fractional Kelly will be used.
+
+Examples:
+
+25% Kelly
+
+50% Kelly
+
+75% Kelly
+
+The optimal fraction will be determined empirically.
+
+---
+
+# 312. KELLY INPUTS
+
+The Kelly engine requires:
+
+Probability of Success
+
+Risk Reward Ratio
+
+Expected Return
+
+These inputs are supplied by:
+
+Meta-Labeler
+
+Risk Engine
+
+Historical Validation
+
+---
+
+# 313. DYNAMIC POSITION SIZING
+
+Position size should adapt to:
+
+Confidence
+
+Volatility
+
+Market Regime
+
+Liquidity
+
+Risk Conditions
+
+---
+
+# 314. HIGH-CONFIDENCE TRADE
+
+Example:
+
+Meta Probability:
+
+90%
+
+Volatility:
+
+Low
+
+Regime:
+
+Stable
+
+Result:
+
+Larger Position Allowed.
+
+---
+
+# 315. LOW-CONFIDENCE TRADE
+
+Example:
+
+Meta Probability:
+
+55%
+
+Volatility:
+
+High
+
+Regime:
+
+Uncertain
+
+Result:
+
+Smaller Position
+
+or
+
+No Trade.
+
+---
+
+# 316. TRADE REJECTION SYSTEM
+
+Not every signal deserves execution.
+
+The Risk Layer has authority to:
+
+Reject Trades.
+
+---
+
+# 317. WHY TRADE REJECTION EXISTS
+
+A signal can be:
+
+Directionally Correct
+
+but
+
+Operationally Dangerous.
+
+Examples:
+
+Extreme Volatility
+
+Low Liquidity
+
+Major News Event
+
+Execution Risk
+
+The trade should be blocked.
+
+---
+
+# 318. META-LABELER AUTHORITY
+
+The Meta-Labeler acts as:
+
+Final Confidence Filter.
+
+If confidence falls below threshold:
+
+Trade Dies.
+
+---
+
+# 319. EXECUTION THRESHOLD
+
+Example:
+
+Confidence:
+
+0.48
+
+Threshold:
+
+0.60
+
+Result:
+
+Trade Rejected.
+
+---
+
+# 320. TRIPLE-BARRIER FRAMEWORK
+
+The project uses:
+
+Triple Barrier Labeling
+
+for both:
+
+Training
+
+and
+
+Execution.
+
+---
+
+# 321. THREE BARRIERS
+
+Every trade has:
+
+Upper Barrier
+
+Lower Barrier
+
+Time Barrier
+
+---
+
+# 322. UPPER BARRIER
+
+Represents:
+
+Take Profit Level.
+
+---
+
+# 323. LOWER BARRIER
+
+Represents:
+
+Stop Loss Level.
+
+---
+
+# 324. TIME BARRIER
+
+Represents:
+
+Maximum Holding Time.
+
+Even if neither stop nor target is hit:
+
+Trade expires.
+
+---
+
+# 325. WHY TIME BARRIERS EXIST
+
+Markets can become:
+
+Stagnant
+
+Sideways
+
+Unpredictable
+
+The Time Barrier prevents capital from becoming trapped.
+
+---
+
+# 326. STATIC BARRIERS ARE FORBIDDEN
+
+The project avoids:
+
+Fixed Stop Losses
+
+Fixed Targets
+
+Example:
+
+Always 1:2 Risk Reward
+
+This is considered suboptimal.
+
+---
+
+# 327. DYNAMIC BARRIER SYSTEM
+
+Barriers must adapt to:
+
+Volatility
+
+Market Regime
+
+Confidence
+
+Expected Movement
+
+---
+
+# 328. GARCH-DRIVEN BARRIERS
+
+Volatility forecasts from:
+
+GARCH
+
+help determine:
+
+Stop Distance
+
+Target Distance
+
+Holding Time
+
+---
+
+# 329. HIGH VOLATILITY REGIME
+
+Characteristics:
+
+Wide Stops
+
+Wide Targets
+
+Smaller Position Size
+
+---
+
+# 330. LOW VOLATILITY REGIME
+
+Characteristics:
+
+Tighter Stops
+
+Tighter Targets
+
+Larger Position Size
+
+---
+
+# 331. ML-ASSISTED BARRIERS
+
+Future versions may use:
+
+Model Probabilities
+
+to dynamically adjust:
+
+Reward Targets
+
+Risk Limits
+
+Barrier Placement
+
+---
+
+# 332. LONG AND SHORT TRADING
+
+The architecture supports:
+
+Long Positions
+
+and
+
+Short Positions.
+
+---
+
+# 333. LONG POSITION
+
+Mechanism:
+
+Buy First
+
+Sell Later.
+
+5Paisa:
+
+transaction_type = BUY
+
+---
+
+# 334. SHORT POSITION
+
+Mechanism:
+
+Sell First
+
+Buy Later.
+
+5Paisa:
+
+transaction_type = SELL
+
+---
+
+# 335. MODEL OUTPUT CLASSES
+
+Class 2:
+
+Strong Bullish
+
+→ Long Engine
+
+---
+
+Class 1:
+
+Neutral
+
+→ No Trade
+
+---
+
+Class 0:
+
+Strong Bearish
+
+→ Short Engine
+
+---
+
+# 336. EXECUTION ROUTER
+
+The Execution Router translates:
+
+Predictions
+
+into
+
+Broker Orders.
+
+---
+
+# 337. EXECUTION ROUTER RESPONSIBILITIES
+
+Determine:
+
+Trade Direction
+
+Position Size
+
+Risk Limits
+
+Order Type
+
+Broker Payload
+
+---
+
+# 338. BROKER COMMUNICATION
+
+The project currently targets:
+
+5Paisa API.
+
+Future brokers may be added later.
+
+---
+
+# 339. ORDER TYPES
+
+Potential Support:
+
+Market Orders
+
+Limit Orders
+
+Stop Orders
+
+Bracket Orders
+
+Cover Orders
+
+depending on broker capabilities.
+
+---
+
+# 340. PRE-TRADE CHECKS
+
+Before execution:
+
+Multiple checks must pass.
+
+---
+
+# 341. PRE-TRADE CHECKLIST
+
+Market Open?
+
+Broker Connected?
+
+Risk Within Limits?
+
+Confidence Sufficient?
+
+Liquidity Adequate?
+
+No System Failure?
+
+No Data Corruption?
+
+---
+
+# 342. CAPITAL EXPOSURE LIMITS
+
+The project should never allow:
+
+Unlimited Exposure.
+
+Examples:
+
+Maximum Capital Per Trade
+
+Maximum Daily Risk
+
+Maximum Concurrent Trades
+
+---
+
+# 343. DAILY LOSS LIMIT
+
+A hard safety mechanism.
+
+If daily losses exceed threshold:
+
+Trading Stops.
+
+---
+
+# 344. WHY DAILY LOSS LIMITS EXIST
+
+Bad days happen.
+
+The objective is:
+
+Survive tomorrow.
+
+---
+
+# 345. MAXIMUM DRAWDOWN CONTROL
+
+The system continuously monitors:
+
+Portfolio Drawdown.
+
+If drawdown exceeds threshold:
+
+Risk automatically reduces.
+
+---
+
+# 346. DYNAMIC RISK REDUCTION
+
+As losses increase:
+
+Position sizes shrink.
+
+This prevents:
+
+Account Destruction.
+
+---
+
+# 347. VOLATILITY CIRCUIT BREAKER
+
+If volatility exceeds predefined limits:
+
+Trading may be reduced
+
+or
+
+stopped.
+
+---
+
+# 348. NEWS CIRCUIT BREAKER
+
+Major events may temporarily suspend:
+
+Automated Trading.
+
+Examples:
+
+Emergency RBI Announcement
+
+War Escalation
+
+Unexpected Government Action
+
+---
+
+# 349. REGIME-AWARE RISK
+
+Risk settings should adapt to:
+
+HHMM States.
+
+---
+
+# 350. EXAMPLE
+
+Stable Bull Regime:
+
+Higher Risk Allowed.
+
+---
+
+Crisis Regime:
+
+Risk Reduced.
+
+---
+
+# 351. PORTFOLIO-LEVEL RISK
+
+Risk should be measured at:
+
+Portfolio Level.
+
+Not merely:
+
+Trade Level.
+
+---
+
+# 352. CORRELATION RISK
+
+Multiple trades may secretly represent:
+
+The same bet.
+
+The system must recognize this.
+
+---
+
+# 353. EXECUTION LATENCY
+
+Execution must remain fast.
+
+Risk calculations must not delay:
+
+Order Placement.
+
+---
+
+# 354. ASYNCHRONOUS DESIGN
+
+Heavy computations occur before execution.
+
+The execution engine remains:
+
+Lightweight
+
+Deterministic
+
+Fast
+
+---
+
+# 355. FAILED ORDER HANDLING
+
+The system must detect:
+
+Order Rejections
+
+Partial Fills
+
+Broker Errors
+
+Network Failures
+
+---
+
+# 356. ORDER RECOVERY LOGIC
+
+Every execution event must be:
+
+Logged
+
+Tracked
+
+Audited
+
+Recoverable
+
+---
+
+# 357. TRADE LIFECYCLE MANAGEMENT
+
+Each trade passes through:
+
+Created
+
+Approved
+
+Executed
+
+Monitored
+
+Closed
+
+Archived
+
+---
+
+# 358. POST-TRADE ANALYSIS
+
+After closure:
+
+The system records:
+
+PnL
+
+Holding Time
+
+Reason For Exit
+
+Signal Confidence
+
+Regime
+
+Volatility
+
+---
+
+# 359. WHY POST-TRADE ANALYSIS EXISTS
+
+Every trade becomes:
+
+Research Data.
+
+Future improvements depend on this archive.
+
+---
+
+# 360. VERSION 1 OBJECTIVE
+
+Version 1 focuses on:
+
+Fractional Kelly
+
+Meta-Label Filtering
+
+Dynamic Triple Barriers
+
+Execution Routing
+
+Capital Protection
+
+---
+
+# 361. VERSION 2 POSSIBILITIES
+
+Future additions:
+
+Portfolio Optimization
+
+Correlation-Aware Positioning
+
+Advanced Execution Algorithms
+
+Smart Order Routing
+
+Slippage Modeling
+
+Market Impact Models
+
+---
+
+# 362. RISK LAYER STATUS
+
+Current Status:
+
+PLANNED
+
+Not Yet Implemented.
+
+Future Components:
+
+Fractional Kelly Engine
+
+Triple Barrier Engine
+
+Trade Router
+
+Execution Engine
+
+Portfolio Risk Monitor
+
+---
+
+# 363. FINAL PHILOSOPHY
+
+Predictions create opportunities.
+
+Risk Management determines survival.
+
+The purpose of the Risk & Execution Layer is not to maximize profits.
+
+The purpose is to ensure that profitable opportunities can be exploited repeatedly without catastrophic losses.
+
+---
+
+# 364. FINAL ROLE IN THE PROJECT
+
+The Risk & Execution Layer is the final guardian between:
+
+Model Intelligence
+
+and
+
+Real Capital.
+
+It is the last line of defense before money enters the market.
+
+---
+
+END OF PART 9

@@ -1,0 +1,789 @@
+# ABOUT_PROJECT.TXT
+
+# PART 10 — MARKET MICROSTRUCTURE LAYER, ORDER FLOW ANALYSIS, LEVEL-2 DATA, OFI, MICROPRICE AND LIQUIDITY INTELLIGENCE
+
+---
+
+# 365. MARKET MICROSTRUCTURE LAYER OVERVIEW
+
+The Market Microstructure Layer is the deepest and most advanced market observation layer in the entire project.
+
+While:
+
+Price shows what happened.
+
+Volume shows how much happened.
+
+OI shows positioning.
+
+News shows information flow.
+
+FII/DII shows institutional capital flow.
+
+The Microstructure Layer attempts to answer:
+
+How is the market mechanically moving right now?
+
+This layer observes the actual battle occurring between buyers and sellers.
+
+---
+
+# 366. WHY MICROSTRUCTURE EXISTS
+
+Most retail traders only see:
+
+OHLCV
+
+Open
+
+High
+
+Low
+
+Close
+
+Volume
+
+However:
+
+Institutional participants see significantly more information.
+
+Examples:
+
+Bid Queue
+
+Ask Queue
+
+Order Book Depth
+
+Spread Dynamics
+
+Liquidity Shifts
+
+Order Flow Imbalances
+
+The Microstructure Layer attempts to capture these signals.
+
+---
+
+# 367. LONG-TERM OBJECTIVE
+
+The objective is not:
+
+Indicator Generation.
+
+The objective is:
+
+Understand the internal mechanics of price movement.
+
+---
+
+# 368. CURRENT STATUS
+
+At present:
+
+Level-2 Order Book Data
+
+is not available in the project.
+
+Therefore:
+
+The Microstructure Layer is currently planned but not active.
+
+Future versions will activate it once depth data collection is implemented.
+
+---
+
+# 369. REQUIRED DATA
+
+The layer requires:
+
+Best Bid Price
+
+Best Ask Price
+
+Best Bid Size
+
+Best Ask Size
+
+Order Book Depth
+
+Market Orders
+
+Liquidity Consumption
+
+Queue Dynamics
+
+---
+
+# 370. WHAT IS LEVEL-2 DATA
+
+Level-1 Data:
+
+Last Traded Price
+
+Volume
+
+OHLC
+
+---
+
+Level-2 Data:
+
+Order Book
+
+Pending Buy Orders
+
+Pending Sell Orders
+
+Liquidity Distribution
+
+Queue Positioning
+
+---
+
+# 371. WHY LEVEL-2 DATA MATTERS
+
+Price is the result.
+
+Order Flow is the cause.
+
+Most traders only see:
+
+The result.
+
+Institutions often focus on:
+
+The cause.
+
+---
+
+# 372. MICROSTRUCTURE PHILOSOPHY
+
+Price moves because:
+
+Liquidity is consumed.
+
+Understanding liquidity provides:
+
+Early warning signals
+
+before price fully reacts.
+
+---
+
+# 373. PRIMARY COMPONENTS
+
+The Microstructure Layer will eventually contain:
+
+Order Flow Imbalance
+
+Microprice
+
+Spread Elasticity
+
+Queue Imbalance
+
+Liquidity Consumption
+
+Market Impact Models
+
+Sentiment Elasticity
+
+Depth Dynamics
+
+---
+
+# 374. ORDER FLOW IMBALANCE (OFI)
+
+One of the most important microstructure features.
+
+Purpose:
+
+Measure buyer pressure versus seller pressure.
+
+---
+
+# 375. OFI INTUITION
+
+If buyers aggressively consume liquidity:
+
+OFI becomes positive.
+
+If sellers aggressively consume liquidity:
+
+OFI becomes negative.
+
+---
+
+# 376. WHY OFI MATTERS
+
+Price often reacts after:
+
+Order flow changes.
+
+OFI attempts to detect:
+
+Pressure
+
+before
+
+Price Movement.
+
+---
+
+# 377. OFI AS A LEADING INDICATOR
+
+Traditional indicators are:
+
+Lagging.
+
+OFI is closer to:
+
+Real-time market intent.
+
+---
+
+# 378. MICROPRICE OVERVIEW
+
+Microprice is a more advanced version of price.
+
+Instead of observing:
+
+Last Traded Price
+
+it observes:
+
+Liquidity-Weighted Price.
+
+---
+
+# 379. MICROPRICE FORMULA
+
+Conceptually:
+
+Microprice weights price by:
+
+Bid Volume
+
+Ask Volume
+
+This produces a more informative estimate of:
+
+Future price direction.
+
+---
+
+# 380. MICROPRICE PURPOSE
+
+Detect hidden pressure inside the order book.
+
+Example:
+
+Price appears unchanged.
+
+Microprice rises.
+
+This suggests:
+
+Buyers dominate liquidity.
+
+---
+
+# 381. WHY MICROPRICE IS USEFUL
+
+Markets frequently move:
+
+After
+
+Microprice shifts.
+
+Not before.
+
+---
+
+# 382. BID-ASK SPREAD
+
+The spread is:
+
+Best Ask
+
+minus
+
+Best Bid.
+
+---
+
+# 383. WHY SPREAD MATTERS
+
+Spread reflects:
+
+Liquidity
+
+Risk
+
+Market Efficiency
+
+Stress
+
+---
+
+# 384. TIGHT SPREAD
+
+Usually indicates:
+
+Healthy Market
+
+Good Liquidity
+
+Low Friction
+
+---
+
+# 385. WIDE SPREAD
+
+Usually indicates:
+
+Stress
+
+Uncertainty
+
+Poor Liquidity
+
+Execution Risk
+
+---
+
+# 386. SPREAD ELASTICITY
+
+Future feature.
+
+Measures:
+
+How spread reacts to information.
+
+Examples:
+
+News
+
+Volatility
+
+Institutional Activity
+
+---
+
+# 387. WHY SPREAD ELASTICITY MATTERS
+
+Strong market events often cause:
+
+Spread Expansion.
+
+This provides information about:
+
+Market Confidence.
+
+---
+
+# 388. QUEUE IMBALANCE
+
+Purpose:
+
+Compare:
+
+Pending Buy Orders
+
+versus
+
+Pending Sell Orders.
+
+---
+
+# 389. QUEUE IMBALANCE INTERPRETATION
+
+Large Bid Queue:
+
+Potential Support.
+
+Large Ask Queue:
+
+Potential Resistance.
+
+---
+
+# 390. LIMITATION OF QUEUE ANALYSIS
+
+Large participants can:
+
+Cancel Orders.
+
+Therefore:
+
+Queue signals must be treated cautiously.
+
+---
+
+# 391. DEPTH ANALYSIS
+
+The order book contains:
+
+Multiple price levels.
+
+Not just:
+
+Best Bid
+
+Best Ask.
+
+Future versions may analyze:
+
+Depth Distribution.
+
+---
+
+# 392. DEPTH WALLS
+
+Large liquidity concentrations create:
+
+Liquidity Walls.
+
+These often influence:
+
+Short-term price movement.
+
+---
+
+# 393. LIQUIDITY VACUUMS
+
+Areas with little depth can produce:
+
+Rapid price movement.
+
+because:
+
+Few orders exist to absorb pressure.
+
+---
+
+# 394. MARKET IMPACT
+
+Purpose:
+
+Estimate how much price moves when liquidity is consumed.
+
+---
+
+# 395. WHY MARKET IMPACT MATTERS
+
+A market with:
+
+Low liquidity
+
+may move aggressively on small orders.
+
+A highly liquid market behaves differently.
+
+---
+
+# 396. MICROSTRUCTURE AND NEWS
+
+The News Layer may eventually interact with:
+
+OFI
+
+Spread Dynamics
+
+Microprice
+
+This creates:
+
+News Elasticity Features.
+
+---
+
+# 397. NEWS ELASTICITY
+
+Concept:
+
+Did the market actually react to the news?
+
+This is more useful than:
+
+Sentiment alone.
+
+---
+
+# 398. HIGH ELASTICITY EVENT
+
+Example:
+
+Positive News
+
+Strong OFI
+
+Aggressive Buying
+
+Spread Expansion
+
+This indicates:
+
+Institutions care.
+
+---
+
+# 399. LOW ELASTICITY EVENT
+
+Example:
+
+Positive News
+
+No OFI
+
+No Liquidity Change
+
+No Spread Movement
+
+This indicates:
+
+Market ignores the news.
+
+---
+
+# 400. SENTIMENT ELASTICITY
+
+Future metric:
+
+FinBERT Sentiment
+
+combined with
+
+Microstructure Response.
+
+---
+
+# 401. MSI (MARKET SENTIMENT INTERACTION)
+
+Future feature.
+
+Combines:
+
+News Sentiment
+
+and
+
+Order Flow Imbalance.
+
+Purpose:
+
+Detect whether participants agree with the news.
+
+---
+
+# 402. MICROSTRUCTURE TIME HORIZON
+
+Unlike Macro Signals:
+
+Microstructure signals decay rapidly.
+
+Typical lifespan:
+
+Seconds
+
+Minutes
+
+Rarely Hours.
+
+---
+
+# 403. PRIMARY USERS OF MICROSTRUCTURE
+
+Intraday Models
+
+Execution Models
+
+Scalping Systems
+
+Short-Term Forecasting
+
+---
+
+# 404. LIMITED USE FOR SWING TRADING
+
+Microstructure signals are generally less useful for:
+
+Weekly
+
+Monthly
+
+Positional
+
+Forecasting.
+
+---
+
+# 405. MICROSTRUCTURE FEATURE STORE
+
+Future feature store outputs may include:
+
+OFI
+
+Microprice
+
+Queue Imbalance
+
+Spread Elasticity
+
+Depth Ratios
+
+Liquidity Scores
+
+Market Impact Scores
+
+---
+
+# 406. RELATIONSHIP WITH FUSION LAYER
+
+Microstructure features eventually feed into:
+
+Fusion Layer.
+
+They become one component of:
+
+Overall Market Intelligence.
+
+---
+
+# 407. RELATIONSHIP WITH META-LABELER
+
+Meta-labeler may use:
+
+Microstructure Context
+
+to determine:
+
+Signal Quality.
+
+---
+
+# 408. EXAMPLE
+
+ML Layer:
+
+BUY
+
+Microstructure:
+
+Strong Seller Dominance
+
+Meta-Labeler:
+
+Confidence Reduced
+
+Trade Rejected.
+
+---
+
+# 409. LATENCY REQUIREMENTS
+
+Microstructure calculations must remain:
+
+Extremely Fast.
+
+Because:
+
+Signals decay quickly.
+
+---
+
+# 410. ENGINEERING REQUIREMENTS
+
+The future system may require:
+
+Streaming Architecture
+
+Async Processing
+
+Low-Latency Storage
+
+Efficient Feature Computation
+
+---
+
+# 411. VERSION 1 STATUS
+
+Currently:
+
+Not Implemented.
+
+Reason:
+
+Depth Data not yet available.
+
+---
+
+# 412. VERSION 2 ACTIVATION
+
+The Microstructure Layer becomes active after:
+
+Level-2 Data Collection
+
+Bid Size Collection
+
+Ask Size Collection
+
+Depth Data Collection
+
+are successfully implemented.
+
+---
+
+# 413. FUTURE FEATURES
+
+Planned Future Features:
+
+OFI
+
+Microprice
+
+Spread Elasticity
+
+Queue Imbalance
+
+Market Impact Models
+
+Sentiment Elasticity
+
+Liquidity Regimes
+
+Execution Quality Metrics
+
+---
+
+# 414. LONG-TERM IMPORTANCE
+
+This layer may eventually provide:
+
+The highest-frequency alpha
+
+in the entire project.
+
+However:
+
+It is also one of the most complex layers.
+
+---
+
+# 415. FINAL PHILOSOPHY
+
+Price is the visible result.
+
+Microstructure is the invisible mechanism producing that result.
+
+The purpose of the Microstructure Layer is to reveal:
+
+The hidden mechanics of market movement
+
+before they become obvious in price charts.
+
+---
+
+END OF PART 10

@@ -1,0 +1,827 @@
+# ABOUT_PROJECT.TXT
+
+# PART 2 — DATABASE ARCHITECTURE, REPOSITORY STRUCTURE, OI INTELLIGENCE LAYER AND COLLECTION INFRASTRUCTURE
+
+---
+
+# 16. REPOSITORY STRUCTURE PHILOSOPHY
+
+The repository is organized around independent intelligence layers.
+
+Each layer must satisfy five requirements:
+
+1. Independent Collection
+2. Independent Storage
+3. Independent Analytics
+4. Independent Feature Store
+5. Independent Validation
+
+The goal is that any layer can be frozen, upgraded, replaced, or retrained without affecting the rest of the system.
+
+Current structure:
+
+```text
+src/
+
+├── oi_intelligence/
+├── fii_dii_intelligence/
+├── news_intelligence/
+├── macro_intelligence/
+
+├── fusion_layer/
+
+├── training/
+
+├── shared/
+
+├── database/
+
+├── execution/
+
+├── monitoring/
+```
+
+---
+
+# 17. INTELLIGENCE LAYER PHILOSOPHY
+
+Every intelligence layer follows the same lifecycle:
+
+Raw Data
+→
+Raw Archive
+→
+Analytics Engine
+→
+Feature Store
+→
+Collection
+→
+Research
+→
+Training
+
+This architecture prevents accidental information loss.
+
+The most important principle:
+
+Never throw away raw data.
+
+Raw data is always more valuable than engineered features because future researchers can derive new features from historical archives.
+
+---
+
+# 18. DATABASE PHILOSOPHY
+
+The database is not merely storage.
+
+The database is the project's permanent memory.
+
+Every major market observation must be stored.
+
+Examples:
+
+Price observations
+
+OI observations
+
+Institutional flows
+
+News events
+
+Macro events
+
+must all become historical records.
+
+This allows:
+
+Backtesting
+
+Feature redesign
+
+Future research
+
+Model retraining
+
+without recollecting data.
+
+---
+
+# 19. OI INTELLIGENCE LAYER OVERVIEW
+
+The OI Intelligence Layer is the first major intelligence layer built in this project.
+
+Purpose:
+
+To measure institutional positioning inside the derivatives market.
+
+The layer attempts to answer:
+
+"What are derivative participants doing?"
+
+instead of:
+
+"What is price doing?"
+
+Price tells us:
+
+What happened.
+
+OI tells us:
+
+Who is committing capital.
+
+This distinction is extremely important.
+
+---
+
+# 20. WHY OI MATTERS
+
+Open Interest measures:
+
+Total outstanding derivative contracts.
+
+When OI changes:
+
+New risk enters or leaves the market.
+
+Price alone cannot reveal this.
+
+Examples:
+
+Price Up + OI Up
+
+Fresh bullish participation.
+
+Price Up + OI Down
+
+Short covering.
+
+Price Down + OI Up
+
+Fresh bearish positioning.
+
+Price Down + OI Down
+
+Long liquidation.
+
+These behaviors frequently precede future market movement.
+
+---
+
+# 21. OI LAYER OBJECTIVE
+
+The OI layer is designed to transform raw option chain snapshots into:
+
+Institutional Intelligence Features.
+
+The system must answer:
+
+Where are positions accumulating?
+
+Where are positions unwinding?
+
+Where are dealers trapped?
+
+Where are major support levels?
+
+Where are major resistance levels?
+
+How aggressively is positioning changing?
+
+---
+
+# 22. RAW DATA SOURCE
+
+Primary Broker:
+
+5Paisa XStream API
+
+The project empirically verified:
+
+Historical API:
+
+Provides:
+
+Open
+High
+Low
+Close
+Volume
+
+but NOT:
+
+Open Interest
+
+Therefore:
+
+Historical OI reconstruction is impossible.
+
+The only reliable solution:
+
+Continuous live collection.
+
+This design decision is foundational.
+
+---
+
+# 23. OPTIONS RAW ARCHIVE
+
+Core Table:
+
+options_raw_chain
+
+Purpose:
+
+Preserve every option chain snapshot.
+
+Nothing should be discarded.
+
+This table acts as:
+
+Permanent Historical Archive
+
+for future research.
+
+---
+
+# 24. CURRENT OPTIONS RAW STORAGE
+
+Every snapshot stores:
+
+Timestamp
+
+Symbol
+
+Expiry Date
+
+Strike Price
+
+Call OI
+
+Put OI
+
+Call Volume
+
+Put Volume
+
+Call Premium
+
+Put Premium
+
+Call Previous Close
+
+Put Previous Close
+
+Call Change In OI
+
+Put Change In OI
+
+Call Scrip Code
+
+Put Scrip Code
+
+Additional Metadata
+
+---
+
+# 25. WHY PREMIUM STORAGE WAS UPGRADED
+
+Earlier versions stored:
+
+premium = max(call, put)
+
+This permanently destroyed information.
+
+The architecture was upgraded.
+
+Now:
+
+Call Premium
+
+and
+
+Put Premium
+
+are stored independently.
+
+This preserves:
+
+Volatility Surface
+
+Skew
+
+Future IV Models
+
+Future Greeks
+
+Future Vanna
+
+Future Charm
+
+Future Dealer Models
+
+---
+
+# 26. RAW DATA PRESERVATION PRINCIPLE
+
+The archive must preserve:
+
+Price
+
+Volume
+
+OI
+
+Change In OI
+
+Strike
+
+Expiry
+
+Scrip Code
+
+Because these are the atomic units of the options market.
+
+Future intelligence features must be derivable from these units.
+
+---
+
+# 27. OI ANALYTICS ENGINE
+
+The analytics layer transforms raw chain data into intelligence.
+
+The goal is:
+
+Convert raw derivatives data into market structure signals.
+
+Not:
+
+Predict directly.
+
+---
+
+# 28. CURRENT OI FEATURES
+
+Version 1 includes:
+
+OI Velocity
+
+OI Acceleration
+
+PCR
+
+ATM Flow
+
+Gamma Exposure
+
+Writing Detection
+
+Call Walls
+
+Put Walls
+
+Regime Signals
+
+Breadth Signals
+
+Concentration Signals
+
+Feature Store Integration
+
+---
+
+# 29. OI VELOCITY
+
+Purpose:
+
+Measure how quickly OI changes.
+
+Formula Concept:
+
+Current OI
+minus
+Previous OI
+
+High velocity indicates:
+
+Aggressive institutional positioning.
+
+Low velocity indicates:
+
+Passive market behavior.
+
+---
+
+# 30. OI ACCELERATION
+
+Purpose:
+
+Measure second derivative of OI.
+
+This answers:
+
+Is positioning speeding up?
+
+Acceleration often matters more than velocity.
+
+Many large market moves begin when OI acceleration spikes.
+
+---
+
+# 31. PUT CALL RATIO (PCR)
+
+Purpose:
+
+Measure aggregate market positioning.
+
+Formula:
+
+Total Put OI
+/
+Total Call OI
+
+Interpretation:
+
+High PCR
+
+Defensive positioning.
+
+Low PCR
+
+Aggressive bullish positioning.
+
+PCR alone is not predictive.
+
+PCR must be combined with:
+
+Price
+
+OI Velocity
+
+Regime State
+
+---
+
+# 32. ATM FLOW
+
+Purpose:
+
+Measure positioning around ATM strikes.
+
+ATM behavior often contains the highest concentration of institutional positioning.
+
+The goal:
+
+Detect capital concentration near current price.
+
+---
+
+# 33. WRITING DETECTION
+
+Purpose:
+
+Detect:
+
+Call Writing
+
+Put Writing
+
+Long Build-Up
+
+Short Build-Up
+
+Long Unwinding
+
+Short Covering
+
+This is achieved by comparing:
+
+Price Changes
+
+against
+
+OI Changes
+
+across time.
+
+---
+
+# 34. GAMMA EXPOSURE (GEX)
+
+Purpose:
+
+Estimate dealer hedging pressure.
+
+High positive GEX:
+
+Volatility suppression.
+
+High negative GEX:
+
+Volatility amplification.
+
+This becomes critical during:
+
+Breakouts
+
+Crashes
+
+Short squeezes
+
+---
+
+# 35. WALL DETECTION
+
+Purpose:
+
+Identify:
+
+Call Walls
+
+Put Walls
+
+Call Wall:
+
+Strike with highest call concentration.
+
+Put Wall:
+
+Strike with highest put concentration.
+
+These often behave as:
+
+Resistance
+
+Support
+
+respectively.
+
+---
+
+# 36. FEATURE STORE PHILOSOPHY
+
+Raw data should never be consumed directly by ML models.
+
+Feature Store responsibility:
+
+Convert intelligence tables into:
+
+ML-ready matrices.
+
+This ensures:
+
+Consistency
+
+Chronology
+
+Reproducibility
+
+Training stability
+
+---
+
+# 37. OI COLLECTION INFRASTRUCTURE
+
+The collection layer is now production-grade.
+
+It runs independently.
+
+Human intervention should not be required.
+
+---
+
+# 38. PRODUCTION DAEMON
+
+Collector:
+
+collection_daemon.py
+
+Responsibilities:
+
+Continuous collection
+
+Error handling
+
+Database recovery
+
+Authentication recovery
+
+Market hour scheduling
+
+Health monitoring
+
+Logging
+
+---
+
+# 39. MARKET SESSION CONTROL
+
+Collection only occurs during:
+
+09:15 IST
+to
+15:30 IST
+
+Weekends are ignored.
+
+Outside trading hours:
+
+The daemon sleeps.
+
+This prevents:
+
+Wasted API calls
+
+Duplicate snapshots
+
+Unnecessary load
+
+---
+
+# 40. SELF-HEALING CAPABILITIES
+
+The daemon automatically recovers from:
+
+Authentication failures
+
+Internet outages
+
+Database reconnects
+
+Broker disconnects
+
+Unexpected exceptions
+
+without manual intervention.
+
+---
+
+# 41. PM2 PROCESS SUPERVISION
+
+PM2 is used for:
+
+Process monitoring
+
+Automatic restarts
+
+Boot persistence
+
+Crash recovery
+
+Log management
+
+This makes the collector suitable for:
+
+30-day runs
+
+60-day runs
+
+Long-term collection
+
+---
+
+# 42. COLLECTION HEALTH SYSTEM
+
+Health metrics include:
+
+Rows Collected
+
+Missing Snapshots
+
+Auth Refresh Count
+
+DB Reconnect Count
+
+Restart Count
+
+Success Rate
+
+Latest Timestamp
+
+Database Size
+
+These metrics are monitored continuously.
+
+---
+
+# 43. BACKUP SYSTEM
+
+Automatic backups exist.
+
+Database backups are verified.
+
+Backup integrity is tested.
+
+This protects:
+
+Historical OI archive
+
+which cannot be reconstructed from the broker.
+
+---
+
+# 44. OI LAYER STATUS
+
+Current Status:
+
+FROZEN
+
+This means:
+
+No further feature development.
+
+No schema redesign.
+
+No architecture redesign.
+
+Focus shifts to:
+
+Data accumulation.
+
+---
+
+# 45. WHY OI IS FROZEN
+
+The current architecture already preserves:
+
+All atomic market variables.
+
+Future features can be reconstructed later.
+
+Collecting more data now has higher value than engineering more features.
+
+Therefore:
+
+Data Collection > Additional Engineering
+
+at this stage.
+
+---
+
+# 46. OI VERSION 2 ROADMAP
+
+Future enhancements after sufficient data:
+
+OI Z-Score
+
+OI Percentile Models
+
+OI/Volume Ratio
+
+Expiry Rollover Intelligence
+
+Multi-Expiry Positioning
+
+Dealer Inventory Models
+
+Explicit Gamma Squeeze Detection
+
+Volatility Surface Intelligence
+
+IV Skew Models
+
+Vanna
+
+Charm
+
+Advanced Dealer Flow Models
+
+These are not blockers.
+
+They will only be evaluated after meaningful historical data exists.
+
+---
+
+# 47. CURRENT OI STATUS SUMMARY
+
+OI Layer:
+COMPLETE
+
+Raw Archive:
+COMPLETE
+
+Feature Store:
+COMPLETE
+
+Monitoring:
+COMPLETE
+
+Backup Infrastructure:
+COMPLETE
+
+Chronology:
+SAFE
+
+Collector:
+PRODUCTION READY
+
+Collection:
+ACTIVE
+
+Status:
+FROZEN + COLLECTING
+
+---
+
+END OF PART 2
