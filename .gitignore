@@ -36,10 +36,39 @@ env/
 .idea/
 .DS_Store
 
-# Data & secrets
+# Data, generated artifacts, and secrets
 .env
-data/
 *.log
+data/*
+!data/raw/
+!data/adjusted/
+!data/features/
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/corp_actions_BSE.csv
+data/adjusted/*
+!data/adjusted/.gitkeep
+data/features/*
+!data/features/.gitkeep
+models/*
+!models/.gitkeep
+backtests/*
+!backtests/.gitkeep
+logs/*
+!logs/.gitkeep
+mlruns/
+
+# Tool caches and reports
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.uv-cache/
+.pip-tools-cache/
+.cache/uv/
+.cache/pip-tools/
 
 # Docker database volumes mapped locally
 postgres_data/
